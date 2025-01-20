@@ -1,5 +1,7 @@
 import React, {useState} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import frown from '../assets/images/sorry.png';
+import './navbar.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Navbar = () =>  {
@@ -44,13 +46,13 @@ const Navbar = () =>  {
 								<Link className="nav-link active" aria-current="page" to="/">Home</Link>
 							</li>
 							<li className="nav-item">
-								<Link className="nav-link" to="/About">Listing</Link>
+								<Link className="nav-link" to="/About">Listings</Link>
 							</li><li className="nav-item">
 								<Link className="nav-link" to="/About">About Us</Link>
 							</li>
-							<li className="nav-item">
-								<Link className="nav-link" to="#">Link</Link>
-							</li>
+							{/* <li className="nav-item">
+								<Link className="nav-link" to="/">Link</Link>
+							</li> */}
 						</ul>
 						<div className='d-flex align-items-center'>
 							{isloggedIn ? (
@@ -70,6 +72,38 @@ const Navbar = () =>  {
 								</>
 							): (
 								<>
+									
+									<div className="profile-dropdown position-relative">
+										<button 
+											className="btn-profile p-0 border-0 bg-transparent"
+											onClick={toggleProfileMenu}
+										>
+											<img 
+											src={frown} 
+											alt="Profile" 
+											className="rounded-full w-16 h-16"
+											style={{ width: '50px', height: '50px', borderRadius:"50%"}}
+											/>
+										</button>
+										{showProfileMenu && (
+											<div className="profile-menu">
+												<div className='profile-menu' style={{width: "250px", height:"250px", textAlign:"center", left:"0", zIndex:"1000"}}>
+													<div className="profile-menu-item" style={{cursor: "pointer"}} onClick={() => navigate('/profile')}>
+														Profile
+													</div>
+													<div className="profile-menu-item" style={{cursor: "pointer"}} onClick={() => navigate('/my-listings')}>
+														My Listings
+													</div>
+													<div className="profile-menu-item" style={{cursor: "pointer"}} onClick={() => navigate('/settings')}>
+														Settings
+													</div>
+													<div className="profile-menu-item text-danger" style={{cursor: "pointer"}} onClick={handleLogout}>
+														Logout
+													</div>
+												</div>
+											</div>
+										)}
+									</div>
 									<button 
 										className="btn-login rounded px-3 py-1 m-2"
 										onClick ={() => navigate('/add-listings')}
@@ -77,36 +111,6 @@ const Navbar = () =>  {
 										Add Listing
 
 									</button>
-									<div className="profile-dropdown position-relative">
-										<button 
-											className="btn-profile p-0 border-0 bg-transparent"
-											onClick={toggleProfileMenu}
-										>
-											<img 
-											src={user.profileImage} 
-											alt="Profile" 
-											className="rounded-circle profile-img"
-											/>
-										</button>
-										{showProfileMenu && (
-											<div className="profile-menu position-absolute bg-body-secondary shadow-lg">
-												<div className='profile-menu'>
-													<div className="profile-menu-item" onClick={() => navigate('/profile')}>
-														Profile
-													</div>
-													<div className="profile-menu-item" onClick={() => navigate('/my-listings')}>
-														My Listings
-													</div>
-													<div className="profile-menu-item" onClick={() => navigate('/settings')}>
-														Settings
-													</div>
-													<div className="profile-menu-item text-danger" onClick={handleLogout}>
-														Logout
-													</div>
-												</div>
-											</div>
-										)}
-									</div>
 								</>
 							)}
 						</div>
