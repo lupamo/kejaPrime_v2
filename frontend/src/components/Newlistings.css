@@ -1,0 +1,33 @@
+.section{
+	display: grid;
+	width: 100%;
+	justify-content: center;
+	align-items: space-between;
+	border: 1px solid red;
+}
+
+.listings{
+	max-width: 1200px;
+	align-items: center;
+	text-align: center;
+}
+.head-3{
+	color: #203856;
+}
+.btn{
+	border: none;
+	background: #fd8b21;
+	border-radius: 5px;
+	padding: 5px 15px;
+	cursor: pointer;
+}
+.btn:hover{
+	background:rgb(245, 159, 80);
+	color: #000;
+
+}
+
+.link{
+	text-decoration: none;
+	color: #fff;
+}
