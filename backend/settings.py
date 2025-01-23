@@ -5,5 +5,5 @@ from os import getenv
 load_dotenv()
 
 MYSQL_USER = getenv("MYSQL_USER")
-MYSQL_PASS = getenv("'MYSQL_PASS")
+MYSQL_PASS = getenv("MYSQL_PASS")
 MYSQL_DB = getenv("MYSQL_DB")
