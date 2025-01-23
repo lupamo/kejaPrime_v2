@@ -6,7 +6,7 @@ from sqlalchemy.ext.declarative import declarative_base
 try:
   # create a database connection 
   engine = create_engine(
-    f"mysql+mysqldb://{settings.MYSQL_USER}:{settings.MYSQL_PASS}@localhost/{settings.MYSQL_DB}"
+    f"mysql+mysqldb://{settings.MYSQL_USER}:{settings.MYSQL_PASS}@localhost:3306/{settings.MYSQL_DB}"
     )
   print("Connection created succesfully")
 except:
