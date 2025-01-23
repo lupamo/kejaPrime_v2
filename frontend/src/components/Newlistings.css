@@ -1,18 +1,12 @@
-.section{
-	display: grid;
-	width: 100%;
-	justify-content: center;
-	align-items: space-between;
-	border: 1px solid red;
-}
-
 .listings{
-	max-width: 1200px;
-	align-items: center;
-	text-align: center;
+	width:100%;
 }
 .head-3{
 	color: #203856;
+}
+.carding{
+	cursor: pointer;
+
 }
 .btn{
 	border: none;
@@ -26,8 +20,33 @@
 	color: #000;
 
 }
-
+/* .carding {
+	max-width: 400px;
+	overflow: hidden;
+} */
 .link{
 	text-decoration: none;
 	color: #fff;
+}
+.listing-card img {
+	width: 100%; 
+	height: 200px;
+	object-fit: cover; 
+	border-radius: 8px;
+}
+.listing-card {
+	border-radius: 8px;
+	margin: 0 20px;
+}
+.card-body h4{
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: block;
+}
+.card-body p {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: block;
 }
