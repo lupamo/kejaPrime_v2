@@ -1,17 +1,19 @@
 import React from 'react';
 import './App.css';
-import Navbar from './components/Navbar';
-import HeroSection from './components/HeroSection';
-import Value from './components/Value';
-import { BrowserRouter } from 'react-router-dom';
 // import Routes from './Routes';
+import Home from './pages/Home';
+import Listings from './pages/Listings';
+import { BrowserRouter, Router, Routes, Route } from 'react-router-dom';
+
+
 function App() {
   
  return (
   <BrowserRouter>
-      <Navbar />
-      <HeroSection />
-      <Value />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/listings" element={<Listings />} />
+      </Routes>
   </BrowserRouter>
  )
 }
