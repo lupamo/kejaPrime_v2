@@ -12,14 +12,6 @@ const ListingsCards = () => {
 	//dummy data
 	const listings = [
 		{
-		  id: 1,
-		  image: exterior_1,
-		  name: "Modern Villa",
-		  number_rooms: "2 Bedroom",
-		  location: "Kasarani, Nairobi",
-		  price: "Ksh 20,000",
-		},
-		{
 		  id: 2,
 		  image: exterior_2,
 		  number_rooms: "Single Room",
@@ -86,7 +78,7 @@ const ListingsCards = () => {
 		  {
 			id: 4,
 			image: exterior_4,
-			number_rooms: "Double Room",
+			number_rooms: "3 Bedroom",
 			name: "City Apartment",
 			location: "Kilimani, Nairobi",
 			price: "Ksh 25,000",
