@@ -1,6 +1,8 @@
 import React, { useState }from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import "./listingsCards.css"
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import { useNavigate } from 'react-router-dom';
+import "./listingsCards.css";
 import exterior_1 from '../assets/images/exterior_1.jpg';
 import exterior_2 from '../assets/images/exterior_2.jpg';
 import exterior_3 from '../assets/images/exterior_3.jpg';
@@ -9,15 +11,17 @@ import location_icon from '../assets/images/location_icon.png';
 
 
 const ListingsCards = () => {
+	const navigate = useNavigate();
+
 	//dummy data
 	const listings = [
 		{
 		  id: 2,
-		  image: exterior_2,
+		  image: exterior_1,
 		  number_rooms: "Single Room",
 		  name: "Beach House",
 		  location: "Westlands, Nairobi",
-		  price: "Ksh 35,000",
+		  price: "Ksh 10,000",
 		},
 		{
 		  id: 3,
@@ -33,34 +37,42 @@ const ListingsCards = () => {
 		  number_rooms: "Bedsitter",
 		  name: "City Apartment",
 		  location: "Kilimani, Nairobi",
-		  price: "Ksh 25,000",
+		  price: "Ksh 5,000",
 		},
 		{
-			id: 4,
+			id: 5,
 			image: exterior_4,
 			number_rooms: "Double Room",
 			name: "City Apartment",
 			location: "Kilimani, Nairobi",
-			price: "Ksh 25,000",
+			price: "Ksh 7,000",
 		  },
 		  {
-			id: 4,
+			id: 6,
 			image: exterior_4,
 			number_rooms: "Double",
 			name: "City Apartment",
 			location: "Kilimani, Nairobi",
-			price: "Ksh 25,000",
+			price: "Ksh 2,000",
 		  },
 		  {
-			id: 4,
+			id: 7,
 			image: exterior_4,
 			number_rooms: "1 Bedroom",
 			name: "City Apartment",
 			location: "Kilimani, Nairobi",
-			price: "Ksh 25,000",
+			price: "Ksh 15,000",
 		  },
 		  {
-			id: 4,
+			id: 8,
+			image: exterior_4,
+			number_rooms: "Double Room",
+			name: "City Apartment",
+			location: "Kilimani, Nairobi",
+			price: "Ksh 5,000",
+		  },
+		  {
+			id: 9,
 			image: exterior_4,
 			number_rooms: "Double Room",
 			name: "City Apartment",
@@ -68,15 +80,7 @@ const ListingsCards = () => {
 			price: "Ksh 25,000",
 		  },
 		  {
-			id: 4,
-			image: exterior_4,
-			number_rooms: "Double Room",
-			name: "City Apartment",
-			location: "Kilimani, Nairobi",
-			price: "Ksh 25,000",
-		  },
-		  {
-			id: 4,
+			id: 10,
 			image: exterior_4,
 			number_rooms: "3 Bedroom",
 			name: "City Apartment",
@@ -84,7 +88,7 @@ const ListingsCards = () => {
 			price: "Ksh 25,000",
 		  },
 		  {
-			id: 4,
+			id: 11,
 			image: exterior_4,
 			number_rooms: "Single Room",
 			name: "City Apartment",
@@ -97,11 +101,16 @@ const ListingsCards = () => {
 	  const filteredListings = filter === "all" 
 		? listings 
 		: listings.filter((listing) => String(listing.number_rooms) === String(filter));
+
+	  const handleCardClick = (id) => {
+		navigate(`/listings/${id}`);
+	  };
+
 	return(
 		<>
 			<div className="results">
 				<h4 style={{color: "#203856"}}>Result for: {filter === "all" ? "All Listings" : filter}</h4>
-				<div className="filter mb-4">
+				<div className="filter mb-4" style={{zIndex: "1000"}}>
 					<div className="dropdown">
 						<button
 							className="btn btn-primary dropdown-toggle"
@@ -177,8 +186,8 @@ const ListingsCards = () => {
 				<div className="row">
 					{filteredListings.length > 0 ? (
 						filteredListings.map((listing) => (
-						<div className="carding col-xl-3" style={{marginBottom: "10px"}} key={listing.id}>
-							<div className="listing-card shadow-sm">
+						<div className="carding col-xl-3" key={listing.id} style={{marginBottom: "10px"}}>
+							<div className="listing-card shadow-sm" onClick={() => handleCardClick(listing.id)}>
 							<img
 								src={listing.image}
 								alt={listing.name}
