@@ -1,0 +1,13 @@
+@media (max-width: 768px) {
+    .card {
+        width: 100px !important;
+        height: 75px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .card {
+        width: 80px !important;
+        height: 60px !important;
+    }
+}
