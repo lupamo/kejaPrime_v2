@@ -1,8 +1,9 @@
 import React from 'react';
 import './App.css';
-// import Routes from './Routes';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Home from './pages/Home';
 import Listings from './pages/Listings';
+import ListtingDetail from './pages/ListingDetail';
 import { BrowserRouter, Router, Routes, Route } from 'react-router-dom';
 
 
@@ -13,6 +14,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/listings" element={<Listings />} />
+        <Route path="/listings/:id" element={<ListtingDetail />} />
       </Routes>
   </BrowserRouter>
  )
