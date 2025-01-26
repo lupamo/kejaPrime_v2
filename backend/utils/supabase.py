@@ -20,7 +20,20 @@ try:
     if isinstance(response, dict) and response.get('error'):
         print("Error:", response['error']['message'])
     else:
-        print("Bucket created successfully:", response)
+        print("property Bucket created successfully:", response)
 
+except Exception as e:
+    print("An error occurred:", str(e))
+
+try:
+    # create a bucket to store user profile pictures
+    response_p = supabase.storage.create_bucket(
+        'profile_pictures',
+        options={
+            "public": True,
+            "allowed_mime_types": settings.ALLOWED_MIME_TYPES,
+            "file_size_limit": 10485760
+        }
+    )
 except Exception as e:
     print("An error occurred:", str(e))

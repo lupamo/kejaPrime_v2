@@ -1,12 +1,10 @@
 from passlib.context import CryptContext
-from fastapi.security import HTTPBearer, OAuth2PasswordBearer
+from fastapi.security import HTTPBearer
 from fastapi import HTTPException, Depends, status
 import jwt
 from jwt import PyJWTError
 import settings
 from datetime import datetime, timedelta
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 security = HTTPBearer()
 

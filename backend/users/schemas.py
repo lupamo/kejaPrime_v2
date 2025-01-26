@@ -11,3 +11,9 @@ class UserPostBase(BaseModel):
 class UserLoginBase(BaseModel):
     email: str
     password: str
+
+class UserPutBase(BaseModel):
+    username: Optional[str] = None
+    email: Optional[str] = None
+    contact: Optional[str] = None
+    profile_pic: Optional[str] = None
