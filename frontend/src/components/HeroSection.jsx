@@ -3,7 +3,7 @@ import '../styles/HeroSection.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 const HeroSection = () => {
   return (
-    <div className='hero-section d-flex justify-content-center align-items-end pt-5 gap-7 z-20'>
+    <div className='hero-section d-flex justify-content-center align-items-end gap-7 z-20'>
         <div className='hero-title container text-center mb-5 p-4'>
             <h1 className='display-4 fw-bold text-white fw-bold  mb-4 hero-title'>
                 Discover your Perfect Home

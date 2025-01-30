@@ -29,7 +29,7 @@ const Navbar = () =>  {
 		<>
 			<nav className="navbar navbar-expand-lg bg-body-tertiary">
 				<div className="container-fluid">
-					<a className="navbar-brand" href="#">KejaPrime</a>
+					<a className="navbar-brand" href="/">KejaPrime</a>
 					<button
 					 className="navbar-toggler" 
 					 type="button" data-bs-toggle="collapse" 

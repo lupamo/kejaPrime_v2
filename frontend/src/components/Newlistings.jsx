@@ -6,6 +6,10 @@ import exterior_1 from '../assets/images/exterior_1.jpg';
 import exterior_2 from '../assets/images/exterior_2.jpg';
 import exterior_3 from '../assets/images/exterior_3.jpg';
 import exterior_4 from '../assets/images/exterior_4.jpg';
+import interior_2 from '../assets/images/interior_2.jpg';
+import interior_3 from '../assets/images/interior_3.jpg';
+import interior_4 from '../assets/images/interior_4.jpg';
+import interior_1 from '../assets/images/interior_1.jpg';
 import location_icon from '../assets/images/location_icon.png';
 
 
@@ -13,34 +17,38 @@ const Newlistings = () => {
 	//dummy data
 	const listings = [
 		{
-		  id: 1,
-		  image: exterior_1,
-		  name: "Modern Villa",
-		  location: "Kasarani, Nairobi",
-		  price: "Ksh 20,000",
+			id: 2,
+			image: [exterior_2, interior_1, interior_2, interior_3],
+			number_rooms: "Single Room",
+			name: "Beach House",
+			location: "Westlands, Nairobi",
+			price: "Ksh 35,000",
 		},
 		{
-		  id: 2,
-		  image: exterior_2,
-		  name: "Beach House",
-		  location: "Westlands, Nairobi",
-		  price: "Ksh 35,000",
+			id: 3,
+			image: [exterior_2, interior_1, interior_2, interior_3],
+			number_rooms: "Double Room",
+			name: "Country Cottage",
+			location: "Kilimani, Nairobi Kilimani, Nairobi",
+			price: "Ksh 50,000",
 		},
 		{
-		  id: 3,
-		  image: exterior_3,
-		  name: "Country Cottage",
-		  location: "Kilimani, Nairobi Kilimani, Nairobi",
-		  price: "Ksh 50,000",
+			id: 4,
+			image: [exterior_2, interior_1, interior_2, interior_3],
+			number_rooms: "Bedsitter",
+			name: "City Apartment",
+			location: "Kilimani, Nairobi",
+			price: "Ksh 25,000",
 		},
 		{
-		  id: 4,
-		  image: exterior_4,
-		  name: "City Apartment",
-		  location: "Kilimani, Nairobi",
-		  price: "Ksh 25,000",
-		},
-	  ];
+			id: 5,
+			image: [exterior_4],
+			number_rooms: "Double Room",
+			name: "City Apartment",
+			location: "Kilimani, Nairobi",
+			price: "Ksh 25,000",
+		}
+	];
 
 	return (
 		<>
@@ -61,7 +69,7 @@ const Newlistings = () => {
 							<div className="carding col-xl-3" key={listing.id}>
 								<div className="listing-card shadow-sm">
 									<img
-										src={listing.image}
+										src={listing.image.length > 0 ? listing.image[0] : fallbackImage}
 										alt={listing.name}
 										className="card-img-top"
 									/>
