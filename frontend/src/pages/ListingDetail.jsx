@@ -216,16 +216,12 @@ const ListingDetail = () => {
                 )}
             </div>
 
-            <div className="descriptions" style={{marginTop: "20px", display: "flex", flexWrap: "wrap"}}> 
+            <div className="descriptions" style={{marginTop: "20px"}}> 
 				<div style={{flex:"2", minWidth: "300px", padding: "10px"}}>
 					<h3 style={{color: "#203856"}}>Description</h3>
 					<p style={{background:"#f0f3f3", padding:"20px", borderRadius:"5px"}}>{listing.description}</p>
 				</div>
-                <div style={{flex:"1", minWidth: "300px", paddingTop:"20px"}}>
-					<p style={{fontWeight:"600", margin: "0 0 0 10px"}}><span style={{color: "#203856", fontSize:"20px", fontWeight:"700"}}>Price:</span> <span style={{color: "#40b787", fontWeight:"700", fontSize:"23px"}}>{listing.price}</span> per Month</p>
-					<p style={{ margin: "0 0 0 10px", fontWeight:"600" }}><span style={{color: "#203856", fontSize:"20px", fontWeight:"700", marginTop: "5px"}}>Room Type:</span> {listing.number_rooms}</p>
 
-				</div>
             </div>
         </>
     );

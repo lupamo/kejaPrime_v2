@@ -1,54 +1,29 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate} from 'react-router-dom';
 import './Newlistings.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import exterior_1 from '../assets/images/exterior_1.jpg';
-import exterior_2 from '../assets/images/exterior_2.jpg';
-import exterior_3 from '../assets/images/exterior_3.jpg';
-import exterior_4 from '../assets/images/exterior_4.jpg';
-import interior_2 from '../assets/images/interior_2.jpg';
-import interior_3 from '../assets/images/interior_3.jpg';
-import interior_4 from '../assets/images/interior_4.jpg';
-import interior_1 from '../assets/images/interior_1.jpg';
+import { listings } from './ListingsCards';
+import BookmarkButton from '../components/BookmarkButton';
 import location_icon from '../assets/images/location_icon.png';
 
 
 const Newlistings = () => {
-	//dummy data
-	const listings = [
-		{
-			id: 2,
-			image: [exterior_2, interior_1, interior_2, interior_3],
-			number_rooms: "Single Room",
-			name: "Beach House",
-			location: "Westlands, Nairobi",
-			price: "Ksh 35,000",
-		},
-		{
-			id: 3,
-			image: [exterior_2, interior_1, interior_2, interior_3],
-			number_rooms: "Double Room",
-			name: "Country Cottage",
-			location: "Kilimani, Nairobi Kilimani, Nairobi",
-			price: "Ksh 50,000",
-		},
-		{
-			id: 4,
-			image: [exterior_2, interior_1, interior_2, interior_3],
-			number_rooms: "Bedsitter",
-			name: "City Apartment",
-			location: "Kilimani, Nairobi",
-			price: "Ksh 25,000",
-		},
-		{
-			id: 5,
-			image: [exterior_4],
-			number_rooms: "Double Room",
-			name: "City Apartment",
-			location: "Kilimani, Nairobi",
-			price: "Ksh 25,000",
+	const navigate = useNavigate();
+	const firstFourListings = listings.slice(0, 4);
+	
+	const handleCardClick = (id) => {
+        navigate(`/listings/${id}`);
+    };
+	const [bookmarkedListings, setBookmarkedListings] = useState([]);
+
+	const toggleBookmark = (listingId) => {
+		if (bookmarkedListings.includes(listingId)) {
+			setBookmarkedListings(bookmarkedListings.filter((id) => id !== listingId));
+		} else {
+			setBookmarkedListings([...bookmarkedListings, listingId]);
 		}
-	];
+	};
+
 
 	return (
 		<>
@@ -65,15 +40,28 @@ const Newlistings = () => {
 					</div>
 					<div className="container mt-4">
 						<div className="row">
-						{listings.map((listing) => (
+						{firstFourListings.map((listing) => (
 							<div className="carding col-xl-3" key={listing.id}>
 								<div className="listing-card shadow-sm">
-									<img
-										src={listing.image.length > 0 ? listing.image[0] : fallbackImage}
-										alt={listing.name}
-										className="card-img-top"
-									/>
-									<div className="card-body" style={{padding: "12px"}}>
+									<div>
+										<img
+											src={listing.image.length > 0 ? listing.image[0] : fallbackImage}
+											alt={listing.name}
+											className="card-img-top"
+											style={{position: 'relative'}}
+											
+										/>
+										<div style={{ display: 'flex', justifyContent: 'flex-end', marginRight:"10px"}}>
+                                            <BookmarkButton
+                                                isBookmarked={bookmarkedListings.includes(listing.id)}
+                                                onClick={() => toggleBookmark(listing.id)}
+												style={{zIndex: "1000"}}
+                                            />
+                                    	</div>
+									</div>
+									
+									<div className="card-body" onClick={() => handleCardClick(listing.id)} style={{padding: "5px"}}>
+										
 										<h4 style={{marginBottom: "10px", color:"#203856"}}>{listing.name}</h4>
 										<p className="d-flex align-items-center">
 											<img
@@ -85,6 +73,7 @@ const Newlistings = () => {
 											{listing.location}
 										</p>
 										<h5 style={{color:"#203856"}}>{listing.price}</h5>
+										
 									</div>
 								</div>
 							</div>
@@ -99,4 +88,6 @@ const Newlistings = () => {
 		</>
 	);
 }
+
+
 export default Newlistings;
