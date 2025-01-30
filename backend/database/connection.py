@@ -1,29 +1,23 @@
-from sqlalchemy import create_engine
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 import settings
 from sqlalchemy.ext.declarative import declarative_base
 
+# Create an async database connection
 try:
-  # create a database connection 
-  engine = create_engine(
-    f"mysql+mysqldb://{settings.MYSQL_USER}:{settings.MYSQL_PASS}@localhost:3306/{settings.MYSQL_DB}"
-    )
-  print("Connection created succesfully")
-except:
-  print("connection has not been established")
-  exit()
+    engine = create_async_engine(
+        f'postgresql://{settings.DATABASE_USER}:{settings.DATABASE_PASSWORD}@{settings.DATABASE_HOST}/{settings.DATABASE_NAME}', echo=True)  # Use async engine
+    print("Connection created successfully")
+except Exception as e:
+    print("Connection has not been established:", str(e))
+    exit()
 
-# create a session with the database
-session = sessionmaker(bind=engine)
+# Create an async session
+SessionLocal = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 
 Base = declarative_base()
 
-def get_db():
-  # a dependency function for creatiing and closing db sessions
-  db = session()
-  try:
-    yield db
-  finally:
-    db.close()
-
-
+async def get_db():
+    """ Dependency function for creating and closing async db sessions """
+    async with SessionLocal() as db:
+        yield db
