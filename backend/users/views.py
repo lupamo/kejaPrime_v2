@@ -7,6 +7,7 @@ from utils.credentials import decode_credentials
 from fastapi.security import HTTPBasicCredentials
 from utils.auth import security
 from utils.supabase import supabase
+from utils.http_errors import HTTPErros
 
 user_router = APIRouter(prefix='/users', tags=['users'])
 
@@ -19,7 +20,7 @@ def login(
     """
     existing_user = db.query(models.User).filter(models.User.email == user.email).first()
     if not existing_user:
-        return {'message': 'User not found'}
+        raise HTTPErros.not_found_error('User not found')
     if not AuthHandler.verify_password(user.password, existing_user.hashed_passd):
         return {'message': 'WROng password'}
     
@@ -52,6 +53,8 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
     Get a single user from the database
     """
     user = db.query(models.User).filter(models.User.id == user_id).first()
+    if not user:
+        raise HTTPErros.not_found_error('User not found')
     return user
 
 @user_router.post('/register')
