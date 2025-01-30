@@ -3,6 +3,7 @@ from .auth import AuthHandler
 from database.connection import get_db
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
+from .http_errors import HTTPErros
 
 def decode_credentials(credentials, db: Session):
     """
@@ -31,21 +32,14 @@ def decode_credentials(credentials, db: Session):
         if not email:
             raise HTTPException(
                 status_code=401,
-                detail="Invalid token: 'sub' field missing",
+                detail="Invalid token",
             )
 
         # Query the user by email
         user = db.query(models.User).filter(models.User.email == email).first()
         if not user:
-            raise HTTPException(
-                status_code=404,
-                detail="User not found",
-            )
-
+            raise HTTPErros.not_found_error('User not found')
         return user
 
     except Exception as e:
-        raise HTTPException(
-            status_code=401,
-            detail=f"Invalid token: {str(e)}",
-        )
+        raise HTTPErros.unauthorized_error(f'Invalid token')
