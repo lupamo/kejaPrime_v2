@@ -74,7 +74,7 @@ async def register_user(
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-    return new_user
+    return {"message": "User registered successfully", "data": new_user}
 
 @user_router.put('/{user_id}')
 def update_user(
