@@ -1,12 +1,7 @@
-MYSQL_USER=your database username
-MYSQL_PASS=your database password
-MYSQL_DB=the database name
-# MYSQL_USER=root
-# MYSQL_PASS=pascal
-# MYSQL_DB=kejaprimev2_db
+
 
 # Supabase database configuration
-# DATABASE_URL=postgresql://postgres:QGrzswWF31f28HyV@db.itldpydwjskukiiscqxx.supabase.co:5432/postgres
+DATABASE_URL=postgresql://postgres.itldpydwjskukiiscqxx:QGrzswWF31f28HyV@aws-0-eu-central-1.pooler.supabase.com:5432/postgres
 
 # token for JWT
 SECRET_KEY=906357DFCTG87RFVG8R76FYU6FUY
@@ -14,5 +9,6 @@ ALGORITHM=HS256
 EXPIRY=3600
 
 # supabase configuration
-SUPABASE_URL=https://itldpydwjskukiiscqxx.supabase.co
-SUPABASE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml0bGRweWR3anNrdWtpaXNjcXh4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczNzc5MTQxNSwiZXhwIjoyMDUzMzY3NDE1fQ._jHfRuERsPK7rC39KvIEthvASpXW3BKGuoj8JuozbEY
+
+SUPABASE_URL=https://izxdkewuapfqcowpjnjs.supabase.co
+SUPABASE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6eGRrZXd1YXBmcWNvd3BqbmpzIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczODIzMjUzNSwiZXhwIjoyMDUzODA4NTM1fQ.hl1DSIhUkwkUKtAXDFmmkv5HONJZYTFT4ZPA5y9N42M
