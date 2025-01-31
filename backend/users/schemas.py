@@ -1,10 +1,11 @@
 from pydantic import BaseModel
 from typing import Optional
+from datetime import datetime
 
 class UserPostBase(BaseModel):
     username: str
     email: str
-    hashed_passd: str
+    password: str
     contact: str
     profile_pic: Optional[str] = None
 
@@ -17,3 +18,12 @@ class UserPutBase(BaseModel):
     email: Optional[str] = None
     contact: Optional[str] = None
     profile_pic: Optional[str] = None
+
+class UserResponse(BaseModel):
+    id: str
+    email: str
+    username: str
+    contact: str
+    profile_pic: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime

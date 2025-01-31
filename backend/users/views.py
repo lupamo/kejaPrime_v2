@@ -27,7 +27,7 @@ def login(
     token = AuthHandler.generate_token({'sub': existing_user.email})
     return {'access_token': token, 'token_type': 'bearer'}
 
-@user_router.get('/me')
+@user_router.get('/me', response_model=schemas.UserResponse)
 def get_me(
     credentials: HTTPBasicCredentials = Depends(security),
     db: Session = Depends(get_db)
@@ -39,7 +39,7 @@ def get_me(
     return user
 
 
-@user_router.get('/')
+@user_router.get('/', response_model=list[schemas.UserResponse])
 def get_users(db: Session = Depends(get_db)):
     """
     Gets all the users form database
@@ -47,7 +47,7 @@ def get_users(db: Session = Depends(get_db)):
     users = db.query(models.User).all()
     return users
 
-@user_router.get('/{user_id}')
+@user_router.get('/{user_id}', response_model=schemas.UserResponse)
 def get_user(user_id: int, db: Session = Depends(get_db)):
     """
     Get a single user from the database
@@ -64,7 +64,7 @@ async def register_user(
     """
     Register a new user in the database
     """
-    user_hashed_passd = AuthHandler.get_passd_hash(user.hashed_passd)
+    user_hashed_passd = AuthHandler.get_passd_hash(user.password)
     new_user = models.User(
         username=user.username,
         email=user.email,
@@ -74,9 +74,9 @@ async def register_user(
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-    return {"message": "User registered successfully", "data": new_user}
+    return {"message": "User registered successfully", "data": {"email": new_user.email, "username": new_user.username}}
 
-@user_router.put('/{user_id}')
+@user_router.put('/{user_id}', response_model=schemas.UserResponse)
 def update_user(
     user_id: int, user: schemas.UserPutBase, db: Session = Depends(get_db)
     ):
@@ -102,7 +102,7 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
     return {'message': 'User deleted successfully'}
 
 
-@user_router.post('/upload-profile-pic')
+@user_router.post('/avatar')
 async def upload_profile_pic(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
