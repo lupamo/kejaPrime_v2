@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import '@popperjs/core';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import BookmarkButton from '../components/BookmarkButton';
@@ -124,7 +125,7 @@ const ListingsCards = () => {
         <>
             <div className="results">
                 <h4 style={{ color: "#203856" }}>Result for: {filter === "all" ? "All Listings" : filter}</h4>
-                <div className="filter mb-4" style={{ zIndex: "1000" }}>
+                <div className="filter mb-4" style={{ zIndex: "10000" }}>
                     <div className="dropdown">
                         <button
                             className="btn btn-primary dropdown-toggle"

@@ -216,7 +216,7 @@ const ListingDetail = () => {
                 )}
             </div>
 
-            <div className="descriptions" style={{marginTop: "20px"}}> 
+            <div className="descriptions" style={{marginTop: "20px" }}> 
 				<div style={{flex:"2", minWidth: "300px", padding: "10px"}}>
 					<h3 style={{color: "#203856"}}>Description</h3>
 					<p style={{background:"#f0f3f3", padding:"20px", borderRadius:"5px"}}>{listing.description}</p>

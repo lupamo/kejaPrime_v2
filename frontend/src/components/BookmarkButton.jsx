@@ -8,7 +8,7 @@ const BookmarkButton = ({ isBookmarked, onClick }) => {
             onClick={onClick}
             className="bookmark-button"
             style={{
-                backgroundColor: isBookmarked ? '#fd8b21' : '#000',
+                backgroundColor: isBookmarked ? '#fd8b21' : '#474545',
             }}
         >
             <div 

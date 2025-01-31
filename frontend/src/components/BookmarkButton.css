@@ -6,7 +6,7 @@
     height: 1.5rem;
     clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 70%, 0 100%);
     transition: background-color 0.3s ease;
-    background-color: #000; /* Default color */
+    background-color: #474545; /* Default color */
 }
 
 
