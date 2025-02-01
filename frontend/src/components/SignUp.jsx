@@ -12,6 +12,8 @@ const SignUp = () => {
 		contact: ''
 	});
 	const [errors, setErrors] = useState({});
+	const [loading, setLoading] = useState(false);
+	
 	const navigate =useNavigate(); //hook to navigate to another route
 
 	//handle input change
