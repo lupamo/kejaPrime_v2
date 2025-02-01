@@ -12,12 +12,6 @@ from utils.http_errors import HTTPErros
 
 app = FastAPI()
 
-# Create tables
-try:
-    Base.metadata.create_all(bind=engine)
-except Exception as e:
-    print("An error occurred while creating tables:", str(e))
-
 
 # CORS Middleware Configuration (Allow frontend to access API)
 app.add_middleware(
