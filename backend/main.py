@@ -19,7 +19,7 @@ except Exception as e:
 # CORS Middleware Configuration (Allow frontend to access API)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Change to specific origins in production
+    allow_origins=["http://localhost:5173/"],  # Change to specific origins in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
