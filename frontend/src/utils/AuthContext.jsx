@@ -1,77 +1,58 @@
 import React, { createContext, useEffect, useState } from 'react';
-import axios from 'axios';
-
+import { supabase } from './supabaseClient.js'; 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userType, setUserType] = useState('');  // Manage roles (landlord, tenant, etc.)
-  const [accessToken, setAccessToken] = useState(null);
+  const [user, setUser] = useState(null); // Store user data if needed
 
-  // Fetch token from localStorage on mount
+  // Check authentication state on mount
   useEffect(() => {
-    const storedToken = localStorage.getItem('access_token');
-    if (storedToken) {
-      setAccessToken(storedToken);
-      checkAuthStatus(storedToken);  // Check if token is still valid
-    }
+    // Fetch the current session
+    const fetchSession = async () => {
+      const { data: { session }, error } = await supabase.auth.getSession();
+
+      if (session) {
+        setIsLoggedIn(true);
+        setUser(session.user); // Store user data
+      } else {
+        setIsLoggedIn(false);
+        setUser(null);
+      }
+    };
+
+    fetchSession();
+
+    // Listen for authentication state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        setIsLoggedIn(true);
+        setUser(session.user); // Store user data
+      } else {
+        setIsLoggedIn(false);
+        setUser(null);
+      }
+    });
+
+    // Cleanup listener on unmount
+    return () => subscription.unsubscribe();
   }, []);
 
-  // Store or remove the token from localStorage when `accessToken` changes
-  useEffect(() => {
-    if (accessToken) {
-      localStorage.setItem('access_token', accessToken);
-    } else {
-      localStorage.removeItem('access_token');
-    }
-  }, [accessToken]);
-
   /**
-   * Check if the user is authenticated based on the access token.
-   * This function should ideally be called when the app starts (if there's a token).
-   */
-  const checkAuthStatus = async (token) => {
-    if (!token) {
-      setIsLoggedIn(false);
-      return;
-    }
-
-    try {
-      const response = await axios.get('http://localhost:8000/api/v1/users/profile', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.status === 200) {
-        setIsLoggedIn(true);
-        setUserType(response.data.is_landlord ? 'user' : 'user');  // Adjust role
-        console.log("User type:", response.data.is_landlord ? 'user' : 'user'); 
-      } else {
-        console.log('User not logged in');
-        setIsLoggedIn(false);
-        handleLogout();  // Clear token if the user is unauthorized
-      }
-    } catch (error) {
-      console.error('Error checking authentication status:', error);
-      setIsLoggedIn(false);
-      handleLogout();  // Clear token in case of failure
-    }
-  };
-
-  /**
-   * Login function to authenticate the user and retrieve the access token.
+   * Login function using Supabase's signIn method.
    */
   const login = async (email, password) => {
     try {
-      const response = await axios.post('http://localhost:8000/api/v1/auth/sign_in', { email, password });
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-      if (response.status === 200) {
-        setAccessToken(response.data.access_token);
-        setUserType(response.data.is_landlord ? 'user' : 'user');  // Determine role from response
-        setIsLoggedIn(true);
+      if (error) {
+        console.error('Error logging in:', error.message);
       } else {
-        console.error('Error logging in:', response.data);
+        setIsLoggedIn(true);
+        setUser(data.user); // Store user data
       }
     } catch (error) {
       console.error('Error logging in:', error);
@@ -79,21 +60,25 @@ export const AuthProvider = ({ children }) => {
   };
 
   /**
-   * Logout function to clear user session and token.
+   * Logout function using Supabase's signOut method.
    */
-  const logout = () => {
-    setIsLoggedIn(false);
-    setUserType('');
-    setAccessToken(null);
-    localStorage.removeItem('access_token');
+  const logout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        console.error('Error logging out:', error.message);
+      } else {
+        setIsLoggedIn(false);
+        setUser(null);
+      }
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
   };
 
-  /**
-   * Optionally refresh the token if needed (implement if your backend supports token refreshing).
-   */
-
   return (
-    <AuthContext.Provider value={{ isLoggedIn, userType, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, login, logout, user }}>
       {children}
     </AuthContext.Provider>
   );

@@ -19,7 +19,7 @@ import Testimonials from '../components/Testimonials';
 
 const Home = () => {
 	return(
-		<>
+		<>	
 			<Navbar />
 			<HeroSection />
 			<Newlistings />
