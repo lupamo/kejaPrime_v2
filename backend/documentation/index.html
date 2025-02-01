@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1, h2 { color: #333; }
+        pre { background: #f4f4f4; padding: 10px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>KejaPrime API Documentation</h1>
+    <p>Welcome to the KejaPrime API documentation. Below are the available endpoints.</p>
+
+    <h2>1. Users</h2>
+    <p><b>Register a new user</b></p>
+    <pre>POST /users/register
+Body: { "email": "john@gmail.com", "username": "testuser", "password": "secret", "contact": 2766628 }</pre>
+    <p><b>Login</b></p>
+    <pre>POST /users/login
+    Body: { "email": "john@gmail.com", "password": "secret" }</pre>
+
+    <p><b>Get user profile</b> (Authenticated)</p>
+    <pre>GET /users/me
+Headers: {
+    "Authorization": "Bearer token" }</pre>
+    <p><b>Post a profile pic</b></p>
+    <pre>POST /users/avatar
+Headers: {
+    "Authorization
+    ": "Bearer token" }</pre>
+
+    <h2>2. Properties</h2>
+    <p><b>Get all properties</b></p>
+    <pre>GET /properties/</pre>
+    
+    <p><b>Add a new property</b> (Authenticated)</p>
+    <pre>POST /properties/
+Body: { "name": "Apartment", "price": 500, "location": "Nairobi", "description": "Nice place to live"}
+Headers: { "Authorization": "Bearer token" }</pre>
+
+    <p><b>Get a single property</b></p>
+    <pre>GET /properties/{property_id}</pre>
+
+    <p><b>Upload property image</b></p>
+    <pre>POST /properties/upload
+Body: { "property_id": 1, "file": "image.jpg" }
+Headers: {
+    "Authorization": "Bearer token" }</pre>
+
+    <h2>3. Bookmarks</h2>
+    <p><b>Get user bookmarks</b></p>
+    <pre>GET /bookmarks/
+Headers: {
+    "Authorization": "Bearer token" }
+    </pre>
+    
+    <p><b>Add a bookmark</b></p>
+    <pre>POST /bookmarks/
+Body: { "property_id": 1 }
+Headers: { "Authorization": "Bearer token" }</pre>
+
+    <h2>4. Comments</h2>
+    <p><b>Get comments on a property</b></p>
+    <pre>GET /comments/{property_id}
+Headers: {
+    "Authorization": "Bearer token" }
+    </pre>
+    
+    <p><b>Add a comment</b></p>
+    <pre>POST /comments/
+Body: { "property_id": 1, "content": "Nice place!" }
+Headers: { "Authorization": "Bearer token" }</pre>
+
+    <h2>5. Admin</h2>
+    <p><b>Get all users (Admin only)</b></p>
+    <pre>GET /admin/users
+Headers: { "Authorization": "Bearer admin_token" }</pre>
+
+    <footer>
+        <p>For authentication, use a Bearer token in the Authorization header.</p>
+    </footer>
+</body>
+</html>
