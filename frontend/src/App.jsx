@@ -5,7 +5,11 @@ import Home from './pages/Home';
 import Listings from './pages/Listings';
 import ListtingDetail from './pages/ListingDetail';
 <<<<<<< HEAD
+<<<<<<< HEAD
 import CreateListing from './pages/CreateListing';
+=======
+import Profile from './pages/Profile';
+>>>>>>> a2f3e45f911d387de4af3c8a15b09a964dad910b
 =======
 import Profile from './pages/Profile';
 >>>>>>> a2f3e45f911d387de4af3c8a15b09a964dad910b
