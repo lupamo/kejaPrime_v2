@@ -1,6 +1,5 @@
 import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-// import Validation from '../LoginValidation.jsx';
 import axios from 'axios';
 import { AuthContext } from '../utils/AuthContext';
 
@@ -21,21 +20,27 @@ const SignIn = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsLoading(true);
+    setErrors({});
 
-    // const validationErrors = Validation(values);
-    // setErrors(validationErrors);
-
-    // if (Object.keys(validationErrors).length === 0) {
       try {
-        await login(values.email, values.password);
-        navigate('/home'); // Redirect to home page after successful login
+        const response = await axios.post('http://localhost:8000/users/login', {
+          email: values.email,
+          password: values.password,
+        });
+  
+        if (response.status === 200) {
+          // Call the login function from AuthContext to store the token
+          login(response.data.access_token); // Assuming the backend returns a JWT token
+          navigate('/home'); // Redirect to home page after successful login
+        }
       } catch (error) {
-        console.error('There was an error signing in:', error);
-        setErrors({ login: 'Login failed. Please check your credentials.' });
+        console.error('Error signing in:', error.response?.data || error.message);
+        setErrors({
+          login: error.response?.data?.detail || 'Login failed. Please check your credentials.',
+        });
+      } finally {
+        setIsLoading(false);
       }
-    // }
-
-    setIsLoading(false);
   };
 
   return (
@@ -52,6 +57,7 @@ const SignIn = () => {
             placeholder="Enter your email"
             value={values.email}
             onChange={handleInputChange}
+            required
           />
           {errors.email && <span className='text-danger'>{errors.email}</span>}
         </div>
@@ -65,9 +71,11 @@ const SignIn = () => {
             placeholder="Enter your password"
             value={values.password}
             onChange={handleInputChange}
+            required
           />
           {errors.password && <span className='text-danger'>{errors.password}</span>}
         </div>
+        {errors.login && <div className='text-danger mb-3'>{errors.login}</div>}
         <button type='submit' className='btn btn-primary' disabled={isLoading}>
           {isLoading ? 'Logging in...' : 'Sign In'}
         </button>

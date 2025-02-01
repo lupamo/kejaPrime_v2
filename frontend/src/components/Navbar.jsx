@@ -1,24 +1,21 @@
 import React, {useState} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useContext } from 'react';
+import { AuthContext } from '../utils/AuthContext';
 import frown from '../assets/images/sorry.png';
 import './navbar.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Navbar = () =>  {
-	const [isloggedIn, setIsloggedIn] = useState(false);
+	const { isLoggedIn, logout } = useContext(AuthContext);
 	const [showProfileMenu, setShowProfileMenu] = useState(false);
 	const navigate = useNavigate();
 
-	// This is a dummy data
-	const user = {
-		name: "Arnold lupamo",
-		profileImage: "https://via.placeholder.com/40"
-	};
-
 	// Handling Logout
 	const handleLogout = () => {
-		setIsloggedIn(false);
+		navigate('/sign-in');
 		setShowProfileMenu(false);
+		logout();
 	};
 
 	const toggleProfileMenu = () => {
