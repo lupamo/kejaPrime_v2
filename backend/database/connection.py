@@ -3,27 +3,21 @@ from sqlalchemy.orm import sessionmaker
 import settings
 from sqlalchemy.ext.declarative import declarative_base
 
+# Create an async database connection
 try:
-  # create a database connection 
-  engine = create_engine(
-    f"mysql+mysqldb://{settings.MYSQL_USER}:{settings.MYSQL_PASS}@localhost:3306/{settings.MYSQL_DB}"
-    )
-  print("Connection created succesfully")
-except:
-  print("connection has not been established")
-  exit()
+    engine = create_engine(settings.DATABASE_URL, echo=True)
+except Exception as e:
+    print("An error occurred while connecting to the database:", str(e))
 
-# create a session with the database
+# Create an async session
 session = sessionmaker(bind=engine)
 
 Base = declarative_base()
 
 def get_db():
-  # a dependency function for creatiing and closing db sessions
-  db = session()
-  try:
-    yield db
-  finally:
-    db.close()
-
+    db = session()
+    try:
+        yield db
+    finally:
+        db.close()
 

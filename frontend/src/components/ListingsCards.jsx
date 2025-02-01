@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import '@popperjs/core';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import BookmarkButton from '../components/BookmarkButton';
 import { useNavigate } from 'react-router-dom';
 import "./listingsCards.css";
 import exterior_1 from '../assets/images/exterior_1.jpg';
@@ -13,92 +15,93 @@ import interior_4 from '../assets/images/interior_4.jpg';
 import interior_1 from '../assets/images/interior_1.jpg';
 import location_icon from '../assets/images/location_icon.png';
 
+// Dummy data
+export const listings = [
+    {
+        id: 155,
+        image: [exterior_2, interior_1, interior_2, interior_3],
+        number_rooms: "Single Room",
+        name: "Beach House",
+        location: "Westlands, Nairobi",
+        price: "Ksh 105,000",
+    },
+    {
+        id: 3,
+        image: [exterior_1, interior_4, interior_2, interior_3],
+        number_rooms: "Double Room",
+        name: "Country Cottage",
+        location: "Kilimani, Nairobi Kilimani, Nairobi",
+        price: "Ksh 50,000",
+    },
+    {
+        id: 4,
+        image: [exterior_3, interior_1, interior_2, interior_3],
+        number_rooms: "Bedsitter",
+        name: "City Apartment",
+        location: "Kilimani, Nairobi",
+        price: "Ksh 25,000",
+    },
+    {
+        id: 5,
+        image: [exterior_4],
+        number_rooms: "Double Room",
+        name: "City Apartment",
+        location: "Kilimani, Nairobi",
+        price: "Ksh 25,000",
+    },
+    {
+        id: 6,
+        image: [exterior_2, interior_1, interior_2, interior_3],
+        number_rooms: "Double",
+        name: "City Apartment",
+        location: "Kilimani, Nairobi",
+        price: "Ksh 25,000",
+    },
+    {
+        id: 7,
+        image: [exterior_2, interior_1, interior_2, interior_3],
+        number_rooms: "1 Bedroom",
+        name: "City Apartment",
+        location: "Kilimani, Nairobi",
+        price: "Ksh 25,000",
+    },
+    {
+        id: 8,
+        image: [exterior_2, interior_1, interior_2, interior_3],
+        number_rooms: "Double Room",
+        name: "City Apartment",
+        location: "Kilimani, Nairobi",
+        price: "Ksh 25,000",
+    },
+    {
+        id: 9,
+        image: [exterior_2, interior_1, interior_2, interior_3],
+        number_rooms: "Double Room",
+        name: "City Apartment",
+        location: "Kilimani, Nairobi",
+        price: "Ksh 25,000",
+    },
+    {
+        id: 10,
+        image: [exterior_2, interior_1, interior_2, interior_3],
+        number_rooms: "3 Bedroom",
+        name: "City Apartment",
+        location: "Kilimani, Nairobi",
+        price: "Ksh 25,000",
+    },
+    {
+        id: 11,
+        image: [exterior_2, interior_1, interior_2, interior_3],
+        number_rooms: "Single Room",
+        name: "City Apartment",
+        location: "Kilimani, Nairobi",
+        price: "Ksh 25,000",
+    }
+];
+
 const ListingsCards = () => {
     const navigate = useNavigate();
-
-    // Dummy data
-    const listings = [
-		{
-			id: 155,
-			image: [exterior_2, interior_1, interior_2, interior_3],
-			number_rooms: "Single Room",
-			name: "Beach House",
-			location: "Westlands, Nairobi",
-			price: "Ksh 35,000",
-		},
-		{
-			id: 3,
-			image: [exterior_2, interior_1, interior_2, interior_3],
-			number_rooms: "Double Room",
-			name: "Country Cottage",
-			location: "Kilimani, Nairobi Kilimani, Nairobi",
-			price: "Ksh 50,000",
-		},
-		{
-			id: 4,
-			image: [exterior_2, interior_1, interior_2, interior_3],
-			number_rooms: "Bedsitter",
-			name: "City Apartment",
-			location: "Kilimani, Nairobi",
-			price: "Ksh 25,000",
-		},
-		{
-			id: 5,
-			image: [exterior_4],
-			number_rooms: "Double Room",
-			name: "City Apartment",
-			location: "Kilimani, Nairobi",
-			price: "Ksh 25,000",
-		},
-		{
-			id: 6,
-			image: [exterior_2, interior_1, interior_2, interior_3],
-			number_rooms: "Double",
-			name: "City Apartment",
-			location: "Kilimani, Nairobi",
-			price: "Ksh 25,000",
-		},
-		{
-			id: 7,
-			image: [exterior_2, interior_1, interior_2, interior_3],
-			number_rooms: "1 Bedroom",
-			name: "City Apartment",
-			location: "Kilimani, Nairobi",
-			price: "Ksh 25,000",
-		},
-		{
-			id: 8,
-			image: [exterior_2, interior_1, interior_2, interior_3],
-			number_rooms: "Double Room",
-			name: "City Apartment",
-			location: "Kilimani, Nairobi",
-			price: "Ksh 25,000",
-		},
-		{
-			id: 9,
-			image: [exterior_2, interior_1, interior_2, interior_3],
-			number_rooms: "Double Room",
-			name: "City Apartment",
-			location: "Kilimani, Nairobi",
-			price: "Ksh 25,000",
-		},
-		{
-			id: 10,
-			image: [exterior_2, interior_1, interior_2, interior_3],
-			number_rooms: "3 Bedroom",
-			name: "City Apartment",
-			location: "Kilimani, Nairobi",
-			price: "Ksh 25,000",
-		},
-		{
-			id: 11,
-			image: [exterior_2, interior_1, interior_2, interior_3],
-			number_rooms: "Single Room",
-			name: "City Apartment",
-			location: "Kilimani, Nairobi",
-			price: "Ksh 25,000",
-		}
-	];
+    const [bookmarkedListings, setBookmarkedListings] = useState([]);
 
     const [filter, setFilter] = useState("all");
 
@@ -110,11 +113,19 @@ const ListingsCards = () => {
         navigate(`/listings/${id}`);
     };
 
+    const toggleBookmark = (listingId) => {
+		if (bookmarkedListings.includes(listingId)) {
+			setBookmarkedListings(bookmarkedListings.filter((id) => id !== listingId));
+		} else {
+			setBookmarkedListings([...bookmarkedListings, listingId]);
+		}
+	};
+
     return (
         <>
             <div className="results">
                 <h4 style={{ color: "#203856" }}>Result for: {filter === "all" ? "All Listings" : filter}</h4>
-                <div className="filter mb-4" style={{ zIndex: "1000" }}>
+                <div className="filter mb-4" style={{ zIndex: "10000" }}>
                     <div className="dropdown">
                         <button
                             className="btn btn-primary dropdown-toggle"
@@ -191,13 +202,20 @@ const ListingsCards = () => {
                     {filteredListings.length > 0 ? (
                         filteredListings.map((listing) => (
                             <div className="carding col-xl-3" key={listing.id} style={{ marginBottom: "10px" }}>
-                                <div className="listing-card shadow-sm" onClick={() => handleCardClick(listing.id)}>
+                                <div className="listing-card shadow-sm">
                                     <img
                                         src={listing.image[0]} 
                                         alt={listing.name}
                                         className="card-img-top"
+                                        style={{position: 'relative'}}
                                     />
-                                    <div className="card-body" style={{ padding: "12px" }}>
+                                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                            <BookmarkButton
+                                                isBookmarked={bookmarkedListings.includes(listing.id)}
+                                                onClick={() => toggleBookmark(listing.id)}
+                                            />
+                                    </div>
+                                    <div className="card-body" onClick={() => handleCardClick(listing.id)} style={{ padding: "12px" }}>
                                         <h4 style={{ marginBottom: "10px", color: "#203856" }}>
                                             {listing.name}
                                         </h4>
@@ -211,6 +229,7 @@ const ListingsCards = () => {
                                             {listing.location}
                                         </p>
                                         <h5 style={{ color: "#203856" }}>{listing.price}</h5>
+                                        
                                     </div>
                                 </div>
                             </div>

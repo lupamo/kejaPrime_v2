@@ -9,6 +9,7 @@ from utils.supabase import supabase
 from fastapi import File, UploadFile
 from utils.credentials import decode_credentials
 import settings
+from utils.http_errors import HTTPErros
 
 
 property_router = APIRouter(prefix='/properties', tags=['properties'])
@@ -27,6 +28,8 @@ def get_property(property_id: int, db: Session = Depends(get_db)):
     Get a single property from the database
     """
     property = db.query(models.Property).filter(models.Property.id == property_id).first()
+    if not property:
+        raise HTTPErros.not_found_error('Property not found')
     return property
 
 @property_router.post('/add')
