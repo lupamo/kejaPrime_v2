@@ -8,8 +8,8 @@ const SignUp = () => {
 	const [values, setValues] = useState({
 		username: '',
 		email: '',
-		hashed_passd: '',
-		contact: ''// new field for user type (property owner or renter)
+		password: '',
+		contact: ''
 	});
 	const [errors, setErrors] = useState({});
 	const navigate =useNavigate(); //hook to navigate to another route
@@ -21,19 +21,18 @@ const SignUp = () => {
 	//submit form; handle it as async
 	const handleSubmit = async (event) => {
 		event.preventDefault();
-		// const validationErrors = Validation(values);
-    	// setErrors(validationErrors);
-
-		// only post if there are no validation errors
+		setLoading(true);
+		setErrors({});
 		try {
 				console.log("Submitting form");
 				const response = await axios.post('http://localhost:8000/users/register', values); // Post to backend
-				console.log(response.data);
-				// alert('User registered successfully!');
+				console.log('Signup successful:', response.data);
 				navigate('/sign-in'); // Redirect to sign-in page
 		} catch (error) {
 				console.error('There was an error registering the user:', error);
-				// alert('Error registering user. Please try again.');
+				setErrors({ submit: error.response?.data?.detail || 'Error signing up. Please try again.' });
+		} finally {
+			setLoading(false);
 		}
 	}
   return (
@@ -49,6 +48,7 @@ const SignUp = () => {
 					autoComplete='off'
 					placeholder='Enter your username'
 					onChange={handleInput}
+					required
 				/>
 				{errors.name && <span className='text-danger'> {errors.name} </span>}
 			</div>
@@ -61,21 +61,10 @@ const SignUp = () => {
 					autoComplete='off'
 					placeholder='Enter your email'
 					onChange={handleInput}
+					required
 				/>
 				{errors.email && <span className='text-danger'> {errors.email} </span>}
 			</div>
-			{/* <div className='form-group mb-3'>
-				<label htmlFor="location"> Location:</label>
-				<input
-					type="text"
-					name='location'
-					className='form-control'
-					autoComplete='off'
-					placeholder='Enter your location'
-					onChange={handleInput}
-				/>
-				{errors.location && <span className='text-danger'> {errors.location} </span>}
-			</div> */}
 			<div className='form-group mb-3'>
 				<label htmlFor="contact"> Contact:</label>
 				<input
@@ -85,51 +74,29 @@ const SignUp = () => {
 					autoComplete='off'
 					placeholder='Enter your contact'
 					onChange={handleInput}
+					required
 				/>
 				{errors.contact && <span className='text-danger'> {errors.contact} </span>}
 			</div>
-			{/* role: landlord of renter
-			<div className='form-group mb-3'>
-				<label htmlFor="usertype"> Role: </label>
-				<div className='form-check'>
-					<input
-						type="radio"
-						className='form-check-input'
-						name='role'
-						value='user'
-						onChange={handleInput}
-						id='landlord'
-					/>
-					<label className="form-check-label" htmlFor="user">landlord</label>
-				</div> */}
-				{/* <div className='form-check'>
-					<input
-						type="radio"
-						className='form-check-input'
-						name='role'
-						value='user'
-						onChange={handleInput}
-						id='renter'
-					/>
-					<label className="form-check-label" htmlFor="user">Renter </label>
-				</div>
-				{errors.role && <span className='text-danger'> {errors.role} </span>} */}
-			{/* </div> */}
 			<div className='form-group mb-3'>
 				<label htmlFor="password"> Password:</label>
 				<input
 					type="password"
-					name='hashed_passd'
+					name='password'
 					className='form-control'
 					autoComplete='off'
 					placeholder='Enter your password'
 					onChange={handleInput}
+					required
 				/>
-				{errors.password && <span className='text-danger'> {errors.hashed_passd} </span>}
+				{errors.password && <span className='text-danger'> {errors.password} </span>}
 			</div>
-			<button type='submit' className='btn btn-primary'> Sign Up</button>
+			{errors.submit && <div className='text-danger mb-3'>{errors.submit}</div>}
+			<button type='submit' className='btn btn-primary'> 
+				{loading ? 'Signing Up...' : 'Sign Up'}
+			</button>
 		</form>
-		<div className='login'>
+		<div className='login mt-3'>
 			<p>Already have an account ?</p>
 			<Link to='/Sign-in' type='submit' className='btn btn-success w-50'> Sign In</Link>
 		</div>
