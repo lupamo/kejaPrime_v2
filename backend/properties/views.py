@@ -99,4 +99,17 @@ async def upload_image(
         return {'message': 'Image uploaded successfully', 'data': response}
     except Exception as e:
         return {'message': 'An error occured', 'error': str(e)}
+
+
+@property_router.post('/search')
+def search(query: str, db: Session = Depends(get_db)):
+    """
+    Search properties based on a query string
+    """
+    properties = db.query(models.Property).filter(
+        models.Property.name.ilike(f'%{query}%') |
+        models.Property.location.ilike(f'%{query}%') |
+        models.Property.description.ilike(f'%{query}%')
+    ).all()
+    return properties
         
