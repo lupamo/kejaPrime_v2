@@ -52,7 +52,7 @@ const Navbar = () =>  {
 							</li>
 						</ul>
 						<div className='d-flex align-items-center'>
-							{isloggedIn ? (
+							{isLoggedIn ? (
 								<>
 									<button 
 										className="btn-login rounded px-3 py-1 m-2"
@@ -81,11 +81,11 @@ const Navbar = () =>  {
 											className="btn-profile p-0 border-0 bg-transparent"
 											onClick={toggleProfileMenu}
 										>
-											<img 
+											{/* <img 
 											src={user.profileImage} 
 											alt="Profile" 
 											className="rounded-circle profile-img"
-											/>
+											/> */}
 										</button>
 										{showProfileMenu && (
 											<div className="profile-menu position-absolute bg-body-secondary shadow-lg">
