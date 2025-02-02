@@ -40,7 +40,7 @@ const Navbar = () =>  {
 					<div className="collapse navbar-collapse" id="navbarSupportedContent">
 						<ul className="navbar-nav me-auto mb-2 mb-lg-0 ms-auto">
 							<li className="nav-item">
-								<Link className="nav-link active" aria-current="page" to="/">Home</Link>
+								<Link className="nav-link active" aria-current="page" to="/home">Home</Link>
 							</li>
 							<li className="nav-item">
 								<Link className="nav-link" to="/listings">Listings</Link>
@@ -52,7 +52,7 @@ const Navbar = () =>  {
 							</li> */}
 						</ul>
 						<div className='d-flex align-items-center'>
-							{isloggedIn ? (
+							{isLoggedIn ? (
 								<>
 									<button 
 										className="btn-login rounded px-3 py-1 m-2"

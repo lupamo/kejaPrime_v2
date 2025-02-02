@@ -1,5 +1,6 @@
 import React, { createContext, useEffect, useState } from 'react';
 import { supabase } from './supabaseClient.js'; 
+import axios from 'axios';
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -43,7 +44,7 @@ export const AuthProvider = ({ children }) => {
    */
   const login = async (email, password) => {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const response = await axios.post('http://localhost:8000/users/login', {
         email,
         password,
       });
