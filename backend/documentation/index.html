@@ -44,6 +44,11 @@ Headers: { "Authorization": "Bearer token" }</pre>
     <p><b>Get a single property</b></p>
     <pre>GET /properties/{property_id}</pre>
 
+    <p><b>Get a propery that a user has posted property</b></p>
+    <pre>GET /properties/me
+        Headers: { "Authorization": "Bearer token" } 
+    </pre>
+
     <p><b>Upload property image</b></p>
     <pre>POST /properties/upload
 Body: { "property_id": 1, "file": "image.jpg" }

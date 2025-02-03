@@ -48,7 +48,7 @@ def get_users(db: Session = Depends(get_db)):
     return users
 
 @user_router.get('/{user_id}', response_model=schemas.UserResponse)
-def get_user(user_id: int, db: Session = Depends(get_db)):
+def get_user(user_id: str, db: Session = Depends(get_db)):
     """
     Get a single user from the database
     """
