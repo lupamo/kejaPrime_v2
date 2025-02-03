@@ -1,80 +1,53 @@
 import React, { createContext, useEffect, useState } from 'react';
-import { supabase } from './supabaseClient.js'; 
+import axios from 'axios';
+
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState(null); // Store user data if needed
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem('token') || null);
 
-  // Check authentication state on mount
   useEffect(() => {
-    // Fetch the current session
-    const fetchSession = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-
-      if (session) {
-        setIsLoggedIn(true);
-        setUser(session.user); // Store user data
-      } else {
-        setIsLoggedIn(false);
-        setUser(null);
+    const fetchUser = async () => {
+      if (token) {
+        try {
+          const response = await axios.get('http://localhost:8000/users/me', {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setUser(response.data);
+          setIsLoggedIn(true);
+        } catch (error) {
+          console.error('Error fetching user:', error.response?.data || error.message);
+          logout();
+        }
       }
     };
 
-    fetchSession();
+    fetchUser();
+  }, [token]);
 
-    // Listen for authentication state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        setIsLoggedIn(true);
-        setUser(session.user); // Store user data
-      } else {
-        setIsLoggedIn(false);
-        setUser(null);
-      }
-    });
-
-    // Cleanup listener on unmount
-    return () => subscription.unsubscribe();
-  }, []);
-
-  /**
-   * Login function using Supabase's signIn method.
-   */
-  const login = async (email, password) => {
+  const login = async (access_token) => {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      localStorage.setItem('token', access_token);
+      setToken(access_token);
+      setIsLoggedIn(true);
 
-      if (error) {
-        console.error('Error logging in:', error.message);
-      } else {
-        setIsLoggedIn(true);
-        setUser(data.user); // Store user data
-      }
+      //Fetcg user details
+     const response = await axios.get('http://localhost:8000/users/me', {
+      headers: { Authorization: `Bearer ${access_token}` },
+      });
+      setUser(response.data); // Set user details
     } catch (error) {
-      console.error('Error logging in:', error);
+      console.error('Error logging in:', error.response?.data || error.message);
     }
   };
 
-  /**
-   * Logout function using Supabase's signOut method.
-   */
-  const logout = async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-
-      if (error) {
-        console.error('Error logging out:', error.message);
-      } else {
-        setIsLoggedIn(false);
-        setUser(null);
-      }
-    } catch (error) {
-      console.error('Error logging out:', error);
-    }
+  const logout = () => {
+    localStorage.removeItem('token');
+    setToken(null);
+    setUser(null);
+    setIsLoggedIn(false);
   };
 
   return (
