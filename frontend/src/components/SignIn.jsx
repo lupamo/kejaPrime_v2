@@ -23,15 +23,16 @@ const SignIn = () => {
     setErrors({});
 
       try {
-        const response = await axios.post('http://localhost:8000/users/login', {
-          email: values.email,
-          password: values.password,
-        });
+        const response = await axios.post('http://localhost:8000/users/login',
+          { email: values.email, password: values.password },
+          { headers: { 'Content-Type': 'application/json' } }
+        );
   
         if (response.status === 200) {
           // Call the login function from AuthContext to store the token
-          login(response.data.access_token); // Assuming the backend returns a JWT token
-          navigate('/home'); // Redirect to home page after successful login
+          login(response.data.access_token) // recieving access token from backend
+          // login(values.email, values.password); // Assuming the backend returns a JWT token
+          navigate('/'); // Redirect to home page after successful login
         }
       } catch (error) {
         console.error('Error signing in:', error.response?.data || error.message);
