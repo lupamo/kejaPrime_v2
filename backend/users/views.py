@@ -22,7 +22,7 @@ def login(
     if not existing_user:
         raise HTTPErros.not_found_error('User not found')
     if not AuthHandler.verify_password(user.password, existing_user.hashed_passd):
-        return {'message': 'WROng password'}
+        raise HTTPErros.unauthorized("wrong password")
     
     token = AuthHandler.generate_token({'sub': existing_user.email})
     return {'access_token': token, 'token_type': 'bearer'}
