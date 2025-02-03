@@ -22,6 +22,20 @@ def get_properties(db: Session = Depends(get_db)):
     properties = db.query(models.Property).all()
     return properties
 
+@property_router.get('/me')
+def my_properties(
+    credentials: HTTPBasicCredentials = Depends(security),
+    db: Session = Depends(get_db)):
+    """
+    get properties of a certain agent
+    """
+    user = decode_credentials(credentials, db)
+
+    properties = db.query(models.Property).filter(models.Property.agent == user.id).first()
+    if not properties:
+        raise HTTPErros.not_found("properties not found")
+    return properties
+
 @property_router.get('/{property_id}')
 def get_property(property_id: int, db: Session = Depends(get_db)):
     """
