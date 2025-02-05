@@ -5,10 +5,13 @@ import jwt
 from jwt import PyJWTError
 import settings
 from datetime import datetime, timedelta
+from itsdangerous.url_safe import URLSafeSerializer
 
 security = HTTPBearer()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+serializer = URLSafeSerializer(settings.SECRET_KEY, salt='email-verification')
 
 class AuthHandler:
     def verify_password(plain_passd, hashed_passd):
@@ -48,3 +51,18 @@ class AuthHandler:
         
         except PyJWTError as e:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Token has expired")
+
+    def create_url_safe_token(data: dict):
+        """ generate a safe token for third party apps
+        """
+        token = serializer.dumps(data)
+        return token
+
+    def decode_url_safe_token(token: str) -> dict:
+        try:
+            token_data = serializer.loads(token)
+            return token_data
+        except Exception as e:
+            return f'error {str(e)}'
+            
+        
