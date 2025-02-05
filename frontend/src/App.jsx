@@ -9,6 +9,7 @@ import Profile from './pages/Profile';
 import { BrowserRouter, Router, Routes, Route } from 'react-router-dom';
 import SignIn from './components/SignIn';
 import SignUp from './components/SignUp';
+import CreateListing from './components/CreateListing';
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/createListing" element={<CreateListing />} />
         <Route path="/listings" element={<Listings />} />
         <Route path="/listings/:id" element={<ListtingDetail />} />
         <Route path="/profile" element={<Profile />} />
