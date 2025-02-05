@@ -85,10 +85,10 @@ const Navbar = () => {
                 </div>
                 <button
                   className="btn-login rounded px-3 py-1 m-2"
-                  onClick={() => navigate('/add-listings')}
-                  aria-label="Add Listing"
+                  onClick={() => navigate('/createListing')}
+                  aria-label="Create Listing"
                 >
-                  Add Listing
+                  Create Listing
                 </button>
               </>
             ) : (
