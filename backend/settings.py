@@ -17,6 +17,22 @@ DATABASE_HOST = getenv("DATABASE_HOST")
 DATABASE_PORT = getenv("DATABASE_PORT")
 DATABASE_NAME = getenv("DATABASE_NAME")
 
+# resend api key
+RESEND_API_KEY = getenv("RESEND_API_KEY")
+
+# DOMAIN
+DOMAIN = getenv("DOMAIN")
+#fastapi mail config
+MAIL_USERNAME = getenv("MAIL_USERNAME")
+MAIL_PASSWORD = getenv("MAIL_PASSWORD")
+MAIL_SERVER = getenv("MAIL_SERVER")
+MAIL_PORT = getenv("MAIL_PORT")
+MAIL_FROM = getenv("MAIL_FROM")
+MAIL_FROM_NAME = getenv("MAIL_FROM_NAME")
+MAIL_STARTTLS = True
+MAIL_SSL_TLS = False
+USE_CREDENTIALS = True
+VALIDATE_CERTS = True
 
 # print(isinstance(DATABASE_URL, str))
 # token configuration
