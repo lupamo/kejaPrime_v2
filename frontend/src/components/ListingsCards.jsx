@@ -1,125 +1,71 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import '@popperjs/core';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import BookmarkButton from '../components/BookmarkButton';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { AuthContext } from '../utils/AuthContext';
 import "./listingsCards.css";
-import exterior_1 from '../assets/images/exterior_1.jpg';
-import exterior_2 from '../assets/images/exterior_2.jpg';
-import exterior_3 from '../assets/images/exterior_3.jpg';
-import exterior_4 from '../assets/images/exterior_4.jpg';
-import interior_2 from '../assets/images/interior_2.jpg';
-import interior_3 from '../assets/images/interior_3.jpg';
-import interior_4 from '../assets/images/interior_4.jpg';
-import interior_1 from '../assets/images/interior_1.jpg';
 import location_icon from '../assets/images/location_icon.png';
-
-// Dummy data
-export const listings = [
-    {
-        id: 155,
-        image: [exterior_2, interior_1, interior_2, interior_3],
-        number_rooms: "Single Room",
-        name: "Beach House",
-        location: "Westlands, Nairobi",
-        price: "Ksh 105,000",
-    },
-    {
-        id: 3,
-        image: [exterior_1, interior_4, interior_2, interior_3],
-        number_rooms: "Double Room",
-        name: "Country Cottage",
-        location: "Kilimani, Nairobi Kilimani, Nairobi",
-        price: "Ksh 50,000",
-    },
-    {
-        id: 4,
-        image: [exterior_3, interior_1, interior_2, interior_3],
-        number_rooms: "Bedsitter",
-        name: "City Apartment",
-        location: "Kilimani, Nairobi",
-        price: "Ksh 25,000",
-    },
-    {
-        id: 5,
-        image: [exterior_4],
-        number_rooms: "Double Room",
-        name: "City Apartment",
-        location: "Kilimani, Nairobi",
-        price: "Ksh 25,000",
-    },
-    {
-        id: 6,
-        image: [exterior_2, interior_1, interior_2, interior_3],
-        number_rooms: "Double",
-        name: "City Apartment",
-        location: "Kilimani, Nairobi",
-        price: "Ksh 25,000",
-    },
-    {
-        id: 7,
-        image: [exterior_2, interior_1, interior_2, interior_3],
-        number_rooms: "1 Bedroom",
-        name: "City Apartment",
-        location: "Kilimani, Nairobi",
-        price: "Ksh 25,000",
-    },
-    {
-        id: 8,
-        image: [exterior_2, interior_1, interior_2, interior_3],
-        number_rooms: "Double Room",
-        name: "City Apartment",
-        location: "Kilimani, Nairobi",
-        price: "Ksh 25,000",
-    },
-    {
-        id: 9,
-        image: [exterior_2, interior_1, interior_2, interior_3],
-        number_rooms: "Double Room",
-        name: "City Apartment",
-        location: "Kilimani, Nairobi",
-        price: "Ksh 25,000",
-    },
-    {
-        id: 10,
-        image: [exterior_2, interior_1, interior_2, interior_3],
-        number_rooms: "3 Bedroom",
-        name: "City Apartment",
-        location: "Kilimani, Nairobi",
-        price: "Ksh 25,000",
-    },
-    {
-        id: 11,
-        image: [exterior_2, interior_1, interior_2, interior_3],
-        number_rooms: "Single Room",
-        name: "City Apartment",
-        location: "Kilimani, Nairobi",
-        price: "Ksh 25,000",
-    }
-];
 
 const ListingsCards = () => {
     const navigate = useNavigate();
+    const { token } = useContext(AuthContext);
+    const [listings, setListings] = useState([]);
     const [bookmarkedListings, setBookmarkedListings] = useState([]);
-
     const [filter, setFilter] = useState("all");
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
-    const filteredListings = filter === "all"
-        ? listings
-        : listings.filter((listing) => String(listing.number_rooms) === String(filter));
+    // Fetch listings from backend
+    useEffect(() => {
+        const fetchListings = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/properties/', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                if (response.status === 200) {
+                    setListings(response.data);
+                }
+            } catch (error) {
+                console.error('Error fetching listings:', error);
+                setError('Failed to load listings');
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    const handleCardClick = (id) => {
-        navigate(`/listings/${id}`);
+        fetchListings();
+    }, [token]);
+
+    // Handle bookmark toggle
+    const toggleBookmark = async (listingId) => {
+        try {
+            if (bookmarkedListings.includes(listingId)) {
+                await axios.delete(`http://localhost:8000/properties/${listingId}/bookmark`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setBookmarkedListings(prev => prev.filter(id => id !== listingId));
+            } else {
+                await axios.post(`http://localhost:8000/properties/${listingId}/bookmark`, {}, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setBookmarkedListings(prev => [...prev, listingId]);
+            }
+        } catch (error) {
+            console.error('Bookmark error:', error);
+            setError('Failed to update bookmark');
+        }
     };
 
-    const toggleBookmark = (listingId) => {
-		if (bookmarkedListings.includes(listingId)) {
-			setBookmarkedListings(bookmarkedListings.filter((id) => id !== listingId));
-		} else {
-			setBookmarkedListings([...bookmarkedListings, listingId]);
-		}
-	};
+    // Filter listings based on selection
+    const filteredListings = filter === "all" 
+        ? listings 
+        : listings.filter(listing => listing.property_type === filter);
+
+    if (loading) return <div className="text-center mt-4">Loading listings...</div>;
+    if (error) return <div className="alert alert-danger mt-4">{error}</div>;
 
     return (
         <>
@@ -138,58 +84,37 @@ const ListingsCards = () => {
                         </button>
                         <ul className="dropdown-menu" aria-labelledby="filterDropdown">
                             <li>
-                                <button
-                                    className="dropdown-item"
-                                    onClick={() => setFilter("all")}
-                                >
+                                <button className="dropdown-item" onClick={() => setFilter("all")}>
                                     All
                                 </button>
                             </li>
                             <li>
-                                <button
-                                    className="dropdown-item"
-                                    onClick={() => setFilter("Single Room")}
-                                >
+                                <button className="dropdown-item" onClick={() => setFilter("Single Room")}>
                                     Single Room
                                 </button>
                             </li>
                             <li>
-                                <button
-                                    className="dropdown-item"
-                                    onClick={() => setFilter("Double Room")}
-                                >
+                                <button className="dropdown-item" onClick={() => setFilter("Double Room")}>
                                     Double Room
                                 </button>
                             </li>
                             <li>
-                                <button
-                                    className="dropdown-item"
-                                    onClick={() => setFilter("Bedsitter")}
-                                >
+                                <button className="dropdown-item" onClick={() => setFilter("Bedsitter")}>
                                     Bedsitter
                                 </button>
                             </li>
                             <li>
-                                <button
-                                    className="dropdown-item"
-                                    onClick={() => setFilter("1 Bedroom")}
-                                >
+                                <button className="dropdown-item" onClick={() => setFilter("1 Bedroom")}>
                                     1 Bedroom
                                 </button>
                             </li>
                             <li>
-                                <button
-                                    className="dropdown-item"
-                                    onClick={() => setFilter("2 Bedroom")}
-                                >
+                                <button className="dropdown-item" onClick={() => setFilter("2 Bedroom")}>
                                     2 Bedroom
                                 </button>
                             </li>
                             <li>
-                                <button
-                                    className="dropdown-item"
-                                    onClick={() => setFilter("3 Bedroom")}
-                                >
+                                <button className="dropdown-item" onClick={() => setFilter("3 Bedroom")}>
                                     3 Bedroom
                                 </button>
                             </li>
@@ -204,20 +129,22 @@ const ListingsCards = () => {
                             <div className="carding col-xl-3" key={listing.id} style={{ marginBottom: "10px" }}>
                                 <div className="listing-card shadow-sm">
                                     <img
-                                        src={listing.image[0]} 
-                                        alt={listing.name}
+                                        src={listing.images?.[0] || 'default-image.jpg'}
+                                        alt={listing.title}
                                         className="card-img-top"
-                                        style={{position: 'relative'}}
+                                        style={{ position: 'relative' }}
                                     />
                                     <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                            <BookmarkButton
-                                                isBookmarked={bookmarkedListings.includes(listing.id)}
-                                                onClick={() => toggleBookmark(listing.id)}
-                                            />
+                                        <BookmarkButton
+                                            isBookmarked={bookmarkedListings.includes(listing.id)}
+                                            onClick={() => toggleBookmark(listing.id)}
+                                        />
                                     </div>
-                                    <div className="card-body" onClick={() => handleCardClick(listing.id)} style={{ padding: "12px" }}>
+                                    <div className="card-body" 
+                                         onClick={() => navigate(`/listings/${listing.id}`)} 
+                                         style={{ padding: "12px" }}>
                                         <h4 style={{ marginBottom: "10px", color: "#203856" }}>
-                                            {listing.name}
+                                            {listing.title}
                                         </h4>
                                         <p className="d-flex align-items-center">
                                             <img
@@ -228,8 +155,7 @@ const ListingsCards = () => {
                                             />
                                             {listing.location}
                                         </p>
-                                        <h5 style={{ color: "#203856" }}>{listing.price}</h5>
-                                        
+                                        <h5 style={{ color: "#203856" }}>Ksh {listing.price}/month</h5>
                                     </div>
                                 </div>
                             </div>

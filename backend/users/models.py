@@ -1,5 +1,5 @@
 from database.models import BaseModel
-from sqlalchemy import Column, String, Integer
+from sqlalchemy import Column, String, Integer, Boolean
 from sqlalchemy.orm import relationship
 
 class User(BaseModel):
@@ -10,6 +10,7 @@ class User(BaseModel):
   hashed_passd = Column(String(256), nullable=False, unique=True)
   contact = Column(String(256))
   profile_pic = Column(String(256))
+  is_verified = Column(Boolean, default=False)
 
   # relationships
   bookmarks = relationship('Bookmark', back_populates='user')
