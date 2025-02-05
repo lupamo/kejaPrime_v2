@@ -47,7 +47,7 @@ const Navbar = () => {
               <Link className="nav-link" to="/listings">Listings</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/about">About Us</Link>
+              <Link className="nav-link" to="/">About Us</Link>
             </li>
           </ul>
           <div className="d-flex align-items-center">
@@ -102,7 +102,7 @@ const Navbar = () => {
                 </button>
                 <button
                   className="btn-login rounded px-3 py-1 m-2"
-                  onClick={() => navigate('/signup')}
+                  onClick={() => navigate('/sign-up')}
                   aria-label="Sign Up"
                 >
                   Sign Up
