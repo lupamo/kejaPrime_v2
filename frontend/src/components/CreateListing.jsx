@@ -76,7 +76,7 @@ function CreateListing() {
             });
 
             await axios.post(
-                'http://localhost:8000/properties/upload-multiple', // Adjust endpoint if needed
+                'http://localhost:8000/properties/upload',
                 imagePayload,
                 {
                     headers: {
@@ -177,7 +177,7 @@ function CreateListing() {
 
                             <div className="mb-3">
                                 <label htmlFor="image" className="form-label">Upload Images</label>
-                                <input type="file" className="form-control" id="image" name="images" onChange={handleImageChange} accept="image/*" multiple required key={formData.images.length} />
+                                <input type="file" className="form-control" id="image" name="images" onChange={handleImageChange} accept="image/*" multiple />
                             </div>
 
                             <div className="text-center">
