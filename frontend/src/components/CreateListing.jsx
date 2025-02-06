@@ -70,13 +70,12 @@ function CreateListing() {
 
             // Step 2: Upload multiple images
             const imagePayload = new FormData();
-            imagePayload.append('property_id', propertyId);
             formData.images.forEach((image) => {
                 imagePayload.append('files', image);
             });
 
             await axios.post(
-                'http://localhost:8000/properties/upload',
+                `http://localhost:8000/properties/upload?property_id=${propertyId}`, // Include property_id in the URL as a query parameter
                 imagePayload,
                 {
                     headers: {
@@ -85,6 +84,7 @@ function CreateListing() {
                     },
                 }
             );
+
 
             setMessage('House posted successfully!');
             setFormData({
