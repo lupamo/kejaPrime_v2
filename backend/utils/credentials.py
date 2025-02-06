@@ -38,8 +38,8 @@ def decode_credentials(credentials, db: Session):
         # Query the user by email
         user = db.query(models.User).filter(models.User.email == email).first()
         if not user:
-            raise HTTPErros.not_found_error('User not found')
+            raise HTTPErros.not_found('User not found')
         return user
 
     except Exception as e:
-        raise HTTPErros.unauthorized_error(f'Invalid token')
+        raise HTTPErros.unauthorized(f'Invalid token')
