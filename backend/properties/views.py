@@ -20,6 +20,10 @@ def get_properties(db: Session = Depends(get_db)):
     Get all the properties from the database
     """
     properties = db.query(models.Property).all()
+    for property in properties:
+        property.image_urls = [img.image_url for img in db.query(models.PropertyImage)
+                               .filter(models.PropertyImage.property_id == property.id).all()]
+
     return properties
 
 @property_router.get('/me')
@@ -31,9 +35,13 @@ def my_properties(
     """
     user = decode_credentials(credentials, db)
 
-    properties = db.query(models.Property).filter(models.Property.agent == user.id).first()
+    properties = db.query(models.Property).filter(models.Property.agent == user.id).all()
     if not properties:
         raise HTTPErros.not_found("properties not found")
+    for property in properties:
+        property.image_urls = [img.image_url for img in db.query(models.PropertyImage)
+                               .filter(models.PropertyImage.property_id == property.id).all()]
+
     return properties
 
 @property_router.get('/{property_id}')
