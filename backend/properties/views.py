@@ -10,7 +10,7 @@ from fastapi import File, UploadFile
 from utils.credentials import decode_credentials
 import settings
 from utils.http_errors import HTTPErros
-
+from typing import List
 
 property_router = APIRouter(prefix='/properties', tags=['properties'])
 
@@ -71,49 +71,61 @@ def add_property(
 
 
 @property_router.post('/upload')
-async def upload_image(
+async def upload_images(
     property_id: str,
-    file: UploadFile = File(...),
+    files: List[UploadFile] = File(...),  # Accept multiple files
     db: Session = Depends(get_db),
-    ):
+):
     """
-    Upload a property image to the database
+    Upload multiple property images to the database
     """
-    print('content-type', file.content_type)
-    print('filename', file.filename)
     try:
-        if file.content_type not in settings.ALLOWED_MIME_TYPES:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Unsupported file type: {file.content_type}. Allowed types are {settings.ALLOWED_MIME_TYPES}"
-            )
-        # try reading the file content
-        file_content = await file.read()
-        response = supabase.storage.from_('property_images').upload(
-            path=f'{file.filename}',
-            file=file_content,
-            file_options={
-                "cache-control": "3600",
-                "upsert": False,
-                "content-type": file.content_type
-            },
-        )
-        print(response)
+        # List to hold URLs of the uploaded images
+        uploaded_image_urls = []
         
-        file_url = supabase.storage.from_('property_images').get_public_url(f'{file.filename}')
-        print(file_url)
-        property_image = models.PropertyImage(
-            property_id=property_id,
-            image_url=file_url
-        )
-        db.add(property_image)
-        db.commit()
-        db.refresh(property_image)
+        # Iterate through the files and upload them one by one
+        for file in files:
+            print('content-type', file.content_type)
+            print('filename', file.filename)
 
-        return {'message': 'Image uploaded successfully', 'data': response}
+            # Check if the file type is allowed
+            if file.content_type not in settings.ALLOWED_MIME_TYPES:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Unsupported file type: {file.content_type}. Allowed types are {settings.ALLOWED_MIME_TYPES}"
+                )
+            
+            # Try reading the file content
+            file_content = await file.read()
+            
+            # Upload file to storage
+            response = supabase.storage.from_('property_images').upload(
+                path=f'{file.filename}',
+                file=file_content,
+                file_options={
+                    "cache-control": "3600",
+                    "upsert": False,
+                    "content-type": file.content_type
+                },
+            )
+            
+            # Get the public URL for the uploaded image
+            file_url = supabase.storage.from_('property_images').get_public_url(f'{file.filename}')
+            uploaded_image_urls.append(file_url)
+
+            # Save the image info to the database
+            property_image = models.PropertyImage(
+                property_id=property_id,
+                image_url=file_url
+            )
+            db.add(property_image)
+            db.commit()
+            db.refresh(property_image)
+
+        return {'message': 'Images uploaded successfully', 'data': uploaded_image_urls}
+    
     except Exception as e:
-        return {'message': 'An error occured', 'error': str(e)}
-
+        return {'message': 'An error occurred', 'error': str(e)}
 
 @property_router.post('/search')
 def search(query: str, db: Session = Depends(get_db)):
