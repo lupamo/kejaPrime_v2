@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (access_token) => {
     try {
-      localStorage.setItem('token', access_token);
+      localStorage.setItem('access_token', access_token);
       setToken(access_token);
       setIsLoggedIn(true);
 
@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem('access_token');
     setToken(null);
     setUser(null);
     setIsLoggedIn(false);
