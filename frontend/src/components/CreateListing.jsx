@@ -10,7 +10,8 @@ function CreateListing() {
         name: '',
         price: '',
         location: '',
-        description: ''
+        description: '',
+        bedrooms: ''
     });
 
     const [message, setMessage] = useState('');
@@ -20,7 +21,9 @@ function CreateListing() {
         const { name, value } = e.target;
         setFormData({
             ...formData,
-            [name]: name === 'price' ? parseFloat(value) : value // Ensure price is a number
+            [name]: name === 'price' ? (isNaN(parseFloat(value)) ? '' : parseFloat(value)) :
+            name === 'bedrooms' ? (isNaN(parseInt(value)) ? '' : parseInt(value)) :
+            value // Ensure price is a number
         });
     };
 
@@ -46,6 +49,7 @@ function CreateListing() {
                 price: formData.price, // Price should already be a number
                 location: formData.location,
                 description: formData.description,
+                bedrooms: formData.bedrooms
             };
 
             const propertyResponse = await axios.post(
@@ -65,22 +69,22 @@ function CreateListing() {
             }
 
             // Step 2: Upload multiple images
-            for (const image of formData.images) {
-                const imagePayload = new FormData();
-                imagePayload.append('property_id', String(propertyId)); // Ensure property_id is a string
-                imagePayload.append('file', image);
+            const imagePayload = new FormData();
+            imagePayload.append('property_id', propertyId);
+            formData.images.forEach((image) => {
+                imagePayload.append('files', image);
+            });
 
-                await axios.post(
-                    'http://localhost:8000/properties/upload', // API Endpoint to upload images
-                    imagePayload,
-                    {
-                        headers: {
-                            'Content-Type': 'multipart/form-data',
-                            'Authorization': `Bearer ${token}`
-                        },
-                    }
-                );
-            }
+            await axios.post(
+                'http://localhost:8000/properties/upload-multiple', // Adjust endpoint if needed
+                imagePayload,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${token}`
+                    },
+                }
+            );
 
             setMessage('House posted successfully!');
             setFormData({
@@ -88,7 +92,8 @@ function CreateListing() {
                 name: '',
                 price: '',
                 location: '',
-                description: ''
+                description: '',
+                bedrooms: ''
             });
         } catch (error) {
             if (error.response) {
@@ -117,10 +122,10 @@ function CreateListing() {
                             className={`progress-bar ${loading ? 'progress-bar-striped progress-bar-animated' : ''}`}
                             role="progressbar"
                             style={{
-                                width: loading ? '50%' : '100%',
+                                width: loading ? '70%' : '100%',
                                 backgroundColor: loading ? '#007bff' : '#28a745',
                             }}
-                            aria-valuenow={loading ? 50 : 100}
+                            aria-valuenow={loading ? 70 : 100}
                             aria-valuemin="0"
                             aria-valuemax="100"
                         ></div>
@@ -156,10 +161,23 @@ function CreateListing() {
                                 <label htmlFor="description" className="form-label">Description</label>
                                 <textarea className="form-control" id="description" name="description" value={formData.description} onChange={handleChange} rows="4" placeholder="Enter a detailed description" required></textarea>
                             </div>
+                            <div className="mb-3">
+                                <label htmlFor="bedrooms" className="form-label">Bedrooms</label>
+                                <input 
+                                    type="number" 
+                                    className="form-control" 
+                                    id="bedrooms" 
+                                    name="bedrooms" 
+                                    value={formData.bedrooms} 
+                                    onChange={handleChange} 
+                                    placeholder="Enter number of bedrooms" 
+                                    required 
+                                />
+                            </div>
 
                             <div className="mb-3">
                                 <label htmlFor="image" className="form-label">Upload Images</label>
-                                <input type="file" className="form-control" id="image" name="images" onChange={handleImageChange} accept="image/*" multiple required />
+                                <input type="file" className="form-control" id="image" name="images" onChange={handleImageChange} accept="image/*" multiple required key={formData.images.length} />
                             </div>
 
                             <div className="text-center">
