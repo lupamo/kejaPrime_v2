@@ -15,8 +15,9 @@ class Property(BaseModel):
     bedrooms = Column(Integer)
 
     # relationships
-    bookmarks = relationship('Bookmark', back_populates='property')
-    comments = relationship('Comment', back_populates='property')
+    user = relationship('User', back_populates='properties')
+    bookmarks = relationship('Bookmark', back_populates='property', cascade="all, delete")
+    comments = relationship('Comment', back_populates='property', cascade="all, delete")
 
 class PropertyImage(BaseModel):
     __tablename__ = 'property_images'

@@ -13,8 +13,9 @@ class User(BaseModel):
   is_verified = Column(Boolean, default=False)
 
   # relationships
-  bookmarks = relationship('Bookmark', back_populates='user')
-  comments = relationship('Comment', back_populates='user')
+  properties = relationship('Property', back_populates='user', cascade="all, delete")
+  bookmarks = relationship('Bookmark', back_populates='user', cascade="all, delete")
+  comments = relationship('Comment', back_populates='user', cascade="all, delete")
 
   
 
