@@ -11,7 +11,7 @@ import location_icon from "../assets/images/location_icon.png";
 
 const ListingsCards = () => {
     const navigate = useNavigate();
-    const { token } = useContext(AuthContext);
+    const { user, token } = useContext(AuthContext);
     const [listings, setListings] = useState([]);
     const [bookmarkedListings, setBookmarkedListings] = useState([]);
     const [filter, setFilter] = useState("all");
@@ -38,29 +38,81 @@ const ListingsCards = () => {
         fetchListings();
     }, [token]);
 
-    const toggleBookmark = async (listingId) => {
-        try {
-            if (bookmarkedListings.includes(listingId)) {
-                await axios.delete(`http://localhost:8000/bookmarks/${listingId}`, {
-                    headers: { Authorization: `Bearer ${token}` },
+    useEffect(() => {
+        const fetchBookmarks = async () => {
+            if (!token) return;
+    
+            try {
+                const response = await axios.get('http://localhost:8000/bookmarks/', {
+                    headers: { Authorization: `Bearer ${token}` }
                 });
-                setBookmarkedListings((prev) => prev.filter((id) => id !== listingId));
-            } else {
-                await axios.post(
-                    "http://localhost:8000/bookmarks/",
-                    { property_id: listingId },
-                    {
-                        headers: { Authorization: `Bearer ${token}` },
-                    }
-                );
-                setBookmarkedListings((prev) => [...prev, listingId]);
+                if (response.status === 200) {
+                    // Extract just the property IDs from the bookmarks
+                    const bookmarkedIds = response.data.map(bookmark => bookmark.property_id);
+                    setBookmarkedListings(bookmarkedIds);
+                }
+            } catch (error) {
+                console.error("Error fetching bookmarks:", error);
             }
-        } catch (error) {
-            console.error("Bookmark error:", error);
-            setError("Failed to update bookmark");
-        }
-    };
+        };
+    
+        fetchBookmarks();
+    }, [token]);
 
+    const toggleBookmark = async (listingId) => {
+    if (!token) {
+        console.error("User not logged in");
+        setError("Please login to bookmark listings");
+        return; // Add this return statement - it was missing
+    }
+
+    try {
+        const config = {
+            headers: { 
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        };
+
+        if (bookmarkedListings.includes(listingId)) {
+            // If already bookmarked, get the bookmark ID first
+            const bookmarksResponse = await axios.get(
+                'http://localhost:8000/bookmarks/',
+                config
+            );
+            const bookmark = bookmarksResponse.data.find(b => b.property_id === listingId);
+            
+            if (bookmark) {
+                await axios.delete(
+                    `http://localhost:8000/bookmarks/delete/${bookmark.id}`,
+                    config
+                );
+                setBookmarkedListings(prev => prev.filter(id => id !== listingId));
+            }
+        } else {
+            // If not bookmarked, add new bookmark
+            const response = await axios.post(
+                'http://localhost:8000/bookmarks/add',
+                {},  // Changed from null to empty object
+                {
+                    ...config,
+                    params: { property_id: listingId }
+                }
+            );
+            if (response.status === 200 || response.status === 201) {
+                setBookmarkedListings(prev => [...prev, listingId]);
+            }
+        }
+    } catch (error) {
+        console.error("Bookmark error:", {
+            status: error.response?.status,
+            data: error.response?.data,
+            message: error.message,
+            endpoint: error.config?.url
+        });
+        setError(error.response?.data?.detail || "Failed to bookmark property");
+    }
+};
     const filteredListings =
         filter === "all" ? listings : listings.filter((listing) => listing.property_type === filter);
 

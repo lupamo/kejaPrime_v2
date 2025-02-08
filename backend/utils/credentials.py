@@ -42,4 +42,4 @@ def decode_credentials(credentials, db: Session):
         return user
 
     except Exception as e:
-        raise HTTPErros.unauthorized_error(f'Invalid token')
+        raise HTTPErros.unauthorized(f'Invalid token')

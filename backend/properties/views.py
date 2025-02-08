@@ -37,7 +37,7 @@ def my_properties(
     return properties
 
 @property_router.get('/{property_id}')
-def get_property(property_id: int, db: Session = Depends(get_db)):
+def get_property(property_id: str, db: Session = Depends(get_db)):
     """
     Get a single property from the database
     """

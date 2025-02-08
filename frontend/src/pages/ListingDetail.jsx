@@ -24,16 +24,21 @@ const ListingDetail = () => {
     useEffect(() => {
         const fetchListing = async () => {
             try {
+                // console.log('Token being sent:', token);
                 const response = await axios.get(`http://localhost:8000/properties/${id}`, {
-                    headers: { Authorization: `Bearer ${token}` }
+                    // headers: { Authorization: `Bearer ${token}` }
                 });
                 if (response.status === 200) {
                     setListing(response.data);
                     setMainImage(response.data.images?.[0] || '');
                 }
             } catch (error) {
-                console.error('Error fetching listing:', error);
-                setError('Failed to load listing details');
+                console.error('Error details:', {
+                    status: error.response?.status,
+                    data: error.response?.data,
+                    headers: error.response?.headers
+                });
+                setError(error.response?.data?.detail || 'Failed to load listing details');
             } finally {
                 setLoading(false);
             }
