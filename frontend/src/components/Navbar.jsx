@@ -13,7 +13,7 @@ const Navbar = () => {
 
   // Handle logout
   const handleLogout = () => {
-    navigate('/');
+    navigate('/sign-in');
     setShowProfileMenu(false);
     logout();
   };

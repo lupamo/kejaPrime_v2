@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '@popperjs/core';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-// import { listings } from '../components/ListingsCards';
 import Navbar from '../components/Navbar';
 import axios from 'axios';
 import { AuthContext } from '../utils/AuthContext';
@@ -11,7 +10,7 @@ import cameraIcon from '../assets/images/camera.png'; // Add a default profile p
 
 
 const Profile = () => {
-    const { user } = useContext(AuthContext);
+    const { user, token } = useContext(AuthContext);
     const [listedHouses, setListedHouses] = useState([]);
     const [bookmarkedItems, setBookmarkedItems] = useState([]);
     const [activeTab, setActiveTab] = useState('details');
@@ -24,12 +23,10 @@ const Profile = () => {
             const response = await axios.get('http://localhost:8000/properties/me', {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            if (response.status === 200) { 
-                setListedHouses(response.data);
-            }
+            setListedHouses(response.data);
         } catch (error) {
-            console.error('Error fetching listed houses:', error);
-            setError('Failed to fetch listed houses');
+            console.error('Error :', error);
+            setError('Failed to load listed houses');
         } finally {
             setLoading(false);
         }
@@ -39,7 +36,7 @@ const Profile = () => {
     const fetchBookmarkedItems = async () => {
         setLoading(true);
         try {
-            const response = await axios.get('http://localhost:8000/properties/bookmarks', {
+            const response = await axios.get('http://localhost:8000/bookmarks', {
                 headers: { Authorization: `Bearer ${token}` },
             });
             if (response.status === 200) {
@@ -56,12 +53,14 @@ const Profile = () => {
     //Fetch data when the tabs change
 
     useEffect(() => {
-        if (activeTab === 'listed') {
-            fetchListedHouses();
-        } else if (activeTab === 'bookmarks') {
-            fetchBookmarkedItems();
+        if(token) {
+            if (activeTab === 'listed') {
+                fetchListedHouses();
+            } else if (activeTab === 'bookmarks') {
+                fetchBookmarkedItems();
+            }
         }
-    }, [activeTab]);
+    }, [activeTab, token]);
 
     //Handle profile picture change
     const handleProfilePictureChange = async (eveny) => {
