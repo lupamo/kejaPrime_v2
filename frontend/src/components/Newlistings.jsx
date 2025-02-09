@@ -42,12 +42,12 @@ const Newlistings = () => {
     const toggleBookmark = async (listingId) => {
         try {
             if (bookmarkedListings.includes(listingId)) {
-                await axios.delete(`http://localhost:8000/properties/${listingId}/bookmark`, {
+                await axios.delete(`http://localhost:8000/bookmarks/${listingId}/`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setBookmarkedListings(prev => prev.filter(id => id !== listingId));
             } else {
-                await axios.post(`http://localhost:8000/properties/${listingId}/bookmark`, {}, {
+                await axios.post(`http://localhost:8000/bookmarks/add?property_id=${listingId}`, {}, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setBookmarkedListings(prev => [...prev, listingId]);
