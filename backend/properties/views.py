@@ -1,4 +1,4 @@
-from fastapi import Depends, APIRouter, HTTPException
+from fastapi import Depends, APIRouter, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 from database.connection import get_db
 from . import models, schemas
@@ -79,9 +79,20 @@ def add_property(
 
 
 @property_router.post('/upload')
-async def upload_images(
+def upload_images(
+    bg_tasks: BackgroundTasks,
     property_id: str,
-    files: List[UploadFile] = File(...),  # Accept multiple files
+    files: List[UploadFile] = File(...), 
+    db: Session = Depends(get_db),
+):
+    bg_tasks.add_task(process_images_upload, property_id, files, db)
+    return {"message": "image uploaded"}
+
+
+
+async def process_images_upload(
+    property_id: str,
+    files: List[UploadFile] = File(...), 
     db: Session = Depends(get_db),
 ):
     """

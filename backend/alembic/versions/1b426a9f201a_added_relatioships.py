@@ -1,8 +1,8 @@
-"""added cascade on property and user models
+"""added relatioships
 
-Revision ID: f563a3540db5
-Revises: d544bba558b8
-Create Date: 2025-02-05 12:53:33.768109
+Revision ID: 1b426a9f201a
+Revises: f563a3540db5
+Create Date: 2025-02-09 16:38:17.676058
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'f563a3540db5'
-down_revision: Union[str, None] = 'd544bba558b8'
+revision: str = '1b426a9f201a'
+down_revision: Union[str, None] = 'f563a3540db5'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

@@ -1,4 +1,4 @@
-from fastapi import Depends, APIRouter, File, UploadFile, status
+from fastapi import Depends, APIRouter, File, UploadFile, status, BackgroundTasks
 from sqlalchemy.orm import Session
 from database.connection import get_db
 from users import models, schemas
@@ -119,6 +119,7 @@ def get_user(user_id: str, db: Session = Depends(get_db)):
 
 @user_router.post('/register', status_code=status.HTTP_201_CREATED)
 async def register_user(
+    bg_tasks: BackgroundTasks,
     user: schemas.UserPostBase, db: Session = Depends(get_db)
     ):
     """
@@ -139,7 +140,7 @@ async def register_user(
     db.refresh(new_user)
     token = AuthHandler.create_url_safe_token({'email': new_user.email})
     token_url = f'http://{settings.DOMAIN}/users/auth/verify/{token}'
-    await send_mail([new_user.email], token_url) # send welcome email to the user
+    bg_tasks.add_task(send_mail, [new_user.email], token_url) # send welcome email to the user
     return {"message": "Account created successfully! check email to verify"}
 
 @user_router.put('/{user_id}', response_model=schemas.UserResponse)
