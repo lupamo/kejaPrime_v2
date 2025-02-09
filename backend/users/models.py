@@ -18,4 +18,3 @@ class User(BaseModel):
   comments = relationship('Comment', back_populates='user', cascade="all, delete")
 
   
-
