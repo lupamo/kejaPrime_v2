@@ -1,6 +1,6 @@
 from fastapi import Depends, APIRouter, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
-from database.connection import get_db
+from database.connection import get_db, session
 from . import models, schemas
 from users.models import User
 from utils.auth import security, AuthHandler
@@ -80,74 +80,67 @@ def add_property(
     db.refresh(new_property)
     return new_property
 
-
 @property_router.post('/upload')
 def upload_images(
     bg_tasks: BackgroundTasks,
     property_id: str,
-    files: List[UploadFile] = File(...), 
-    db: Session = Depends(get_db),
+    files: List[UploadFile] = File(...),
 ):
-    bg_tasks.add_task(process_images_upload, property_id, files, db)
-    return {"message": "image uploaded"}
+    """Schedules image uploads in the background"""
+    files_data = []
+
+    for file in files:
+        file_content = file.file.read()  # Read file content (avoid passing UploadFile)
+        files_data.append({
+            "filename": file.filename,
+            "content": file_content,
+            "content_type": file.content_type
+        })
+
+    bg_tasks.add_task(process_images_upload, property_id, files_data)
+
+    return {"message": "Image upload scheduled in the background."}
 
 
+def process_images_upload(property_id: str, files_data: List[dict]):
+    """Uploads multiple property images asynchronously"""
+    db = session()  # Create a new session manually
 
-async def process_images_upload(
-    property_id: str,
-    files: List[UploadFile] = File(...), 
-    db: Session = Depends(get_db),
-):
-    """
-    Upload multiple property images to the database
-    """
     try:
-        # List to hold URLs of the uploaded images
         uploaded_image_urls = []
-        
-        # Iterate through the files and upload them one by one
-        for file in files:
-            print('content-type', file.content_type)
-            print('filename', file.filename)
 
-            # Check if the file type is allowed
-            if file.content_type not in settings.ALLOWED_MIME_TYPES:
+        for file_data in files_data:
+            file_name = file_data["filename"]
+            file_content = file_data["content"]
+            content_type = file_data["content_type"]
+
+            # Check allowed file types
+            if content_type not in settings.ALLOWED_MIME_TYPES:
                 raise HTTPException(
                     status_code=400,
-                    detail=f"Unsupported file type: {file.content_type}. Allowed types are {settings.ALLOWED_MIME_TYPES}"
+                    detail=f"Unsupported file type: {content_type}. Allowed: {settings.ALLOWED_MIME_TYPES}"
                 )
-            
-            # Try reading the file content
-            file_content = await file.read()
-            
-            # Upload file to storage
-            response = supabase.storage.from_('property_images').upload(
-                path=f'{file.filename}',
+
+            # Upload file to Supabase
+            response = supabase.storage.from_("property_images").upload(
+                path=file_name,
                 file=file_content,
-                file_options={
-                    "cache-control": "3600",
-                    "upsert": False,
-                    "content-type": file.content_type
-                },
+                file_options={"content-type": content_type}
             )
-            
+
             # Get the public URL for the uploaded image
-            file_url = supabase.storage.from_('property_images').get_public_url(f'{file.filename}')
+            file_url = supabase.storage.from_("property_images").get_public_url(file_name)
             uploaded_image_urls.append(file_url)
 
-            # Save the image info to the database
-            property_image = models.PropertyImage(
-                property_id=property_id,
-                image_url=file_url
-            )
+            # Save to database
+            property_image = models.PropertyImage(property_id=property_id, image_url=file_url)
             db.add(property_image)
-            db.commit()
-            db.refresh(property_image)
 
-        return {'message': 'Images uploaded successfully', 'data': uploaded_image_urls}
-    
+        db.commit()
     except Exception as e:
-        return {'message': 'An error occurred', 'error': str(e)}
+        print(f"Error uploading images: {e}")
+    finally:
+        db.close()
 
 @property_router.post('/search')
 def search(query: str, db: Session = Depends(get_db)):
