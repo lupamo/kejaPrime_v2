@@ -14,7 +14,7 @@ const token = localStorage.getItem("access_token")
 
 const ListingsCards = () => {
     const navigate = useNavigate();
-    //const { user, token } = useContext(AuthContext);
+    const { user, token } = useContext(AuthContext);
     const [listings, setListings] = useState([]);
     const [bookmarkedListings, setBookmarkedListings] = useState([]);
     const [filter, setFilter] = useState("all");
@@ -40,7 +40,9 @@ const ListingsCards = () => {
             }
         };
 
-        fetchListings();
+        if (token) {
+            fetchListings();
+        }
     }, [token]);
 
     useEffect(() => {
@@ -61,7 +63,9 @@ const ListingsCards = () => {
             }
         };
     
-        fetchBookmarks();
+        if (token) {
+            fetchBookmarks();
+        }
     }, [token]);
 
     const toggleBookmark = async (listingId) => {
