@@ -160,7 +160,7 @@ const ListingsCards = () => {
                             <div className="carding col-xl-3" key={listing.id} style={{ marginBottom: "10px" }}>
                                 <div className="listing-card shadow-sm">
                                     <img
-                                        src={listing.image_url || "https://via.placeholder.com/300"}
+                                        src={listing.image_urls || "https://via.placeholder.com/300"}
                                         alt={listing.title}
                                         className="card-img-top"
                                         style={{ position: "relative", height: "200px", objectFit: "cover" }}

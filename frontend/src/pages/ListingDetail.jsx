@@ -24,28 +24,22 @@ const ListingDetail = () => {
     useEffect(() => {
         const fetchListing = async () => {
             try {
-                // console.log('Token being sent:', token);
-                const response = await axios.get(`http://localhost:8000/properties/${id}`, {
-                    // headers: { Authorization: `Bearer ${token}` }
-                });
-                if (response.status === 200) {
-                    setListing(response.data);
-                    setMainImage(response.data.images?.[0] || '');
-                }
+                console.log(`Fetching listing with ID: ${id}`);
+                const response = await axios.get(`http://localhost:8000/properties/${id}`);
+                console.log('Full response:', response);
+                setListing(response.data);
+                setMainImage(response.data.image_urls?.[0] || '');
             } catch (error) {
-                console.error('Error details:', {
-                    status: error.response?.status,
-                    data: error.response?.data,
-                    headers: error.response?.headers
-                });
-                setError(error.response?.data?.detail || 'Failed to load listing details');
+                console.error('Axios error:', error);
+                console.error('Network error details:', error.toJSON());
+                setError('Failed to connect to server');
             } finally {
                 setLoading(false);
             }
         };
-
+    
         fetchListing();
-    }, [id, token]);
+    }, [id]);
 
     if (loading) return <div className="text-center mt-4">Loading listing details...</div>;
     if (error) return <div className="alert alert-danger mt-4">{error}</div>;
@@ -81,7 +75,7 @@ const ListingDetail = () => {
                 {/* Main image */}
                 <div className="card mb-3" style={{ width: "100%", maxWidth: "85%", height: "auto" }}>
                     <img
-                        src={mainImage || 'default-image.jpg'}
+                        src={listing.image_urls?.[0] || 'https://via.placeholder.com/500'}
                         alt={listing.title}
                         className="card-img-top"
                         style={{ width: "100%", height: "500px", objectFit: "cover" }}
@@ -89,7 +83,7 @@ const ListingDetail = () => {
                 </div>
 
                 {/* Thumbnail images in a Swiper carousel */}
-                {listing.images && listing.images.length > 0 && (
+                {listing.image_urls && listing.image_urls.length > 0 && (
                     <div style={{ width: "100%", maxWidth: "85%", margin: "0 auto" }}>
                         <Swiper
                             spaceBetween={10}
@@ -103,7 +97,7 @@ const ListingDetail = () => {
                                 1024: { slidesPerView: 4 },
                             }}
                         >
-                            {listing.images.map((image, index) => (
+                            {listing.image_urls?.map((image, index) => (
                                 <SwiperSlide key={index}>
                                     <div
                                         className="card"
