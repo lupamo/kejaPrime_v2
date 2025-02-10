@@ -16,7 +16,7 @@ const ListingDetail = () => {
     const navigate = useNavigate();
     const { token } = useContext(AuthContext);
     const [listing, setListing] = useState(null);
-    const [mainImage, setMainImage] = useState('');
+    const [activeIndex, setActiveIndex] = useState(0); // Track the active image index
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
@@ -28,7 +28,6 @@ const ListingDetail = () => {
                 const response = await axios.get(`http://localhost:8000/properties/${id}`);
                 console.log('Full response:', response);
                 setListing(response.data);
-                setMainImage(response.data.image_urls?.[0] || '');
             } catch (error) {
                 console.error('Axios error:', error);
                 console.error('Network error details:', error.toJSON());
@@ -37,7 +36,7 @@ const ListingDetail = () => {
                 setLoading(false);
             }
         };
-    
+
         fetchListing();
     }, [id]);
 
@@ -62,8 +61,8 @@ const ListingDetail = () => {
                     </p>
                 </div>
                 <div>
-                    <button 
-                        className="btn btn-secondary mb-3" 
+                    <button
+                        className="btn btn-secondary mb-3"
                         onClick={() => navigate("/listings")}
                     >
                         Back to Listings
@@ -72,25 +71,44 @@ const ListingDetail = () => {
             </div>
 
             <div className="d-flex flex-column align-items-center">
-                {/* Main image */}
-                <div className="card mb-3" style={{ width: "100%", maxWidth: "85%", height: "auto" }}>
-                    <img
-                        src={listing.image_urls?.[0] || 'https://via.placeholder.com/500'}
-                        alt={listing.title}
-                        className="card-img-top"
-                        style={{ width: "100%", height: "500px", objectFit: "cover" }}
-                    />
+                {/* Main image swiper */}
+                <div style={{ width: "100%", maxWidth: "85%", marginBottom: "20px" }}>
+                    <Swiper
+                        spaceBetween={10}
+                        navigation
+                        pagination={{ clickable: true }}
+                        modules={[Navigation, Pagination]}
+                        onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)} // Update active index on slide change
+                        initialSlide={activeIndex} // Set initial slide to activeIndex
+                    >
+                        {listing.image_urls?.map((image, index) => (
+                            <SwiperSlide key={index}>
+                            
+                                    <div className="card" style={{ width: "100%", height: "500px", border: "none" }}>
+                                        <img
+                                            src={image}
+                                            alt={`Main Image ${index}`}
+                                            className="card-img-top h-100"
+                                            style={{ objectFit: "cover" }}
+                                        />
+                                    </div>
+
+                            </SwiperSlide>
+                        ))}
+                    </Swiper>
                 </div>
 
                 {/* Thumbnail images in a Swiper carousel */}
                 {listing.image_urls && listing.image_urls.length > 0 && (
-                    <div style={{ width: "100%", maxWidth: "85%", margin: "0 auto" }}>
+                    <div style={{ width: "100%", maxWidth: "85%", margin: "0 auto", display: "none" }}>
                         <Swiper
                             spaceBetween={10}
                             slidesPerView={4}
                             navigation
                             pagination={{ clickable: true }}
                             modules={[Navigation, Pagination]}
+                            allowTouchMove={false} // Disable swiping
+                            preventClicks={false} // Allow clicks to propagate
                             breakpoints={{
                                 320: { slidesPerView: 2 },
                                 768: { slidesPerView: 3 },
@@ -101,8 +119,13 @@ const ListingDetail = () => {
                                 <SwiperSlide key={index}>
                                     <div
                                         className="card"
-                                        style={{ width: "80%", height: "150px", cursor: "pointer" }}
-                                        onClick={() => setMainImage(image)}
+                                        style={{
+                                            width: "80%",
+                                            height: "150px",
+                                            cursor: "pointer",
+                                            border: activeIndex === index ? "3px solid #007bff" : "none", // Highlight active thumbnail
+                                        }}
+                                        onClick={() => setActiveIndex(index)} // Set active index on thumbnail click
                                     >
                                         <img
                                             src={image}
@@ -118,7 +141,7 @@ const ListingDetail = () => {
                 )}
             </div>
 
-            <div className="descriptions" style={{ marginTop: "20px" }}> 
+            <div className="descriptions" style={{ marginTop: "20px" }}>
                 <div style={{ flex: "2", minWidth: "300px", padding: "10px" }}>
                     <h3 style={{ color: "#203856" }}>Description</h3>
                     <p style={{ background: "#f0f3f3", padding: "20px", borderRadius: "5px" }}>
