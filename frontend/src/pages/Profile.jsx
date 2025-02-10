@@ -37,14 +37,15 @@ const Profile = () => {
         setLoading(true);
         try {
             const response = await axios.get('http://localhost:8000/bookmarks', {
-                headers: { Authorization: `Bearer ${token}` },
+                headers:  
+                { Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+                },
             });
-            if (response.status === 200) {
-                setBookmarkedItems(response.data);
-            }
+            setBookmarkedItems(response.data);
         } catch (error) {
             console.error('Error fetching bookmarks:', error);
-            setError('Failed to fetch bookmarks');
+            setError(error.response?.data?.detail || 'Failed to fetch bookmarks');
         } finally {
             setLoading(false);
         }
