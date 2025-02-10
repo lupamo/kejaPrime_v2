@@ -39,10 +39,7 @@ const ListingsCards = () => {
                 setLoading(false);
             }
         };
-
-        if (token) {
-            fetchListings();
-        }
+        fetchListings();
     }, [token]);
 
     useEffect(() => {
@@ -63,9 +60,8 @@ const ListingsCards = () => {
             }
         };
     
-        if (token) {
-            fetchBookmarks();
-        }
+        fetchBookmarks();
+        
     }, [token]);
 
     const toggleBookmark = async (listingId) => {
