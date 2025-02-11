@@ -19,13 +19,15 @@ const Profile = () => {
 
     //fetch listed houses from backend
     const fetchListedHouses = async () => {
+        setLoading(true);
         try {
             const response = await axios.get('http://localhost:8000/properties/me', {
                 headers: { Authorization: `Bearer ${token}` },
             });
+            console.log('Listed houses response:', response.data);
             setListedHouses(response.data);
         } catch (error) {
-            console.error('Error :', error);
+            console.error('Error fetching listed houses:', error);
             setError('Failed to load listed houses');
         } finally {
             setLoading(false);
@@ -36,13 +38,23 @@ const Profile = () => {
     const fetchBookmarkedItems = async () => {
         setLoading(true);
         try {
-            const response = await axios.get('http://localhost:8000/bookmarks', {
+            const response = await axios.get('http://localhost:8000/bookmarks/', {
                 headers:  
                 { Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json'
                 },
             });
-            setBookmarkedItems(response.data);
+            //fetching the full details for each bookmarked property
+            const propertyPromises = response.data.map(bookmark => 
+                axios.get(`http://localhost:8000/properties/${bookmark.property_id}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                })
+            );
+            const propertyResponses = await Promise.all(propertyPromises);
+            const bookmarkedProperties = propertyResponses.map(response => response.data);
+
+            setBookmarkedItems(bookmarkedProperties);
+
         } catch (error) {
             console.error('Error fetching bookmarks:', error);
             setError(error.response?.data?.detail || 'Failed to fetch bookmarks');
@@ -188,7 +200,7 @@ const Profile = () => {
                                         <div className="col-xl-4 mb-4" key={listing.id}>
                                             <div className="card shadow-sm">
                                                 <img
-                                                    src={listing.images?.[0] || defaultProfilePic}
+                                                    src={listing.image_urls || defaultProfilePic}
                                                     alt={listing.title}
                                                     className="card-img-top"
                                                     style={{ height: '200px', objectFit: 'cover' }}
@@ -218,19 +230,19 @@ const Profile = () => {
                                 {loading ? (
                                     <div className="text-center">Loading bookmarks...</div>
                                 ) : bookmarkedItems.length > 0 ? (
-                                    bookmarkedItems.map((listing) => (
-                                        <div className="col-xl-4 mb-4" key={listing.id}>
+                                    bookmarkedItems.map((property) => (
+                                        <div className="col-xl-4 mb-4" key={property.id}>
                                             <div className="card shadow-sm">
                                                 <img
-                                                    src={listing.images?.[0] || defaultProfilePic}
-                                                    alt={listing.title}
+                                                    src={property.image_urls || defaultProfilePic}
+                                                    alt={property.title}
                                                     className="card-img-top"
                                                     style={{ height: '200px', objectFit: 'cover' }}
                                                 />
                                                 <div className="card-body">
-                                                    <h5 className="card-title">{listing.title}</h5>
-                                                    <p className="card-text">{listing.location}</p>
-                                                    <p className="card-text">Ksh {listing.price}/month</p>
+                                                    <h5 className="card-title">{property.title}</h5>
+                                                    <p className="card-text">{property.location}</p>
+                                                    <p className="card-text">Ksh {property.price}/month</p>
                                                 </div>
                                             </div>
                                         </div>
