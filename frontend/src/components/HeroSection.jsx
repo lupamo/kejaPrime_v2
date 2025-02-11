@@ -1,33 +1,19 @@
-import React from 'react'
+import React from 'react';
 import '../styles/HeroSection.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-const HeroSection = () => {
-  return (
-    <div className='hero-section d-flex justify-content-center align-items-end gap-7 z-20'>
-        <div className='hero-title container text-center mb-5 p-4'>
-            <h1 className='display-4 fw-bold text-white fw-bold  mb-4 hero-title'>
-                Discover your Perfect Home
-            </h1>
-            <div className='search-bar d-flex justify-content-center'>
-                <input type="text" 
-                    className='form-control me-2'
-                    placeholder=' Search a house'
-                    style={{ maxWidth:'400px' }}
-                />
-                <button 
-                    className='btn' 
-                    style={{
-                        backgroundColor: 'darkorange',
-                        borderColor: 'darkorange',
-                        color: 'white',
-                    }}
-                >
-                    Find
-                </button>
-            </div>
-        </div>
-    </div>
-  )
-}
+import SearchBar from '../components/SearchBar';
 
-export default HeroSection
+const HeroSection = ({ onSearch }) => {
+  return (
+    <div className='hero-section d-flex flex-column justify-content-center align-items-center text-center gap-4'>
+      <div className='hero-content'>
+          <h1 className='display-4 fw-bold text-white mb-4'>
+            Discover Your Perfect Home
+          </h1>
+          <SearchBar onSearch={onSearch} />
+      </div>
+    </div>
+  );
+};
+
+export default HeroSection;
