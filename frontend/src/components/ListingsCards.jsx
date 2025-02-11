@@ -14,7 +14,7 @@ const token = localStorage.getItem("access_token")
 
 const ListingsCards = () => {
     const navigate = useNavigate();
-    //const { user, token } = useContext(AuthContext);
+    const { user, token } = useContext(AuthContext);
     const [listings, setListings] = useState([]);
     const [bookmarkedListings, setBookmarkedListings] = useState([]);
     const [filter, setFilter] = useState("all");
@@ -39,7 +39,6 @@ const ListingsCards = () => {
                 setLoading(false);
             }
         };
-
         fetchListings();
     }, [token]);
 
@@ -62,6 +61,7 @@ const ListingsCards = () => {
         };
     
         fetchBookmarks();
+        
     }, [token]);
 
     const toggleBookmark = async (listingId) => {
@@ -160,7 +160,7 @@ const ListingsCards = () => {
                             <div className="carding col-xl-3" key={listing.id} style={{ marginBottom: "10px" }}>
                                 <div className="listing-card shadow-sm">
                                     <img
-                                        src={listing.image_url || "https://via.placeholder.com/300"}
+                                        src={listing.image_urls || "https://via.placeholder.com/300"}
                                         alt={listing.title}
                                         className="card-img-top"
                                         style={{ position: "relative", height: "200px", objectFit: "cover" }}
