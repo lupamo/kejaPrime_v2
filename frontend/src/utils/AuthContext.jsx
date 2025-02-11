@@ -10,7 +10,10 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const storedToken = localStorage.getItem('access_token');
-    if (!storedToken) return;
+    if (!storedToken) {
+      setIsLoggedIn(false);
+      return;
+    };
 
     setToken(storedToken); // Ensure token is set before API calls
 
@@ -52,15 +55,11 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('access_token');
     setToken(null);
     setUser(null);
-    return (
-      <AuthContext.Provider value={{ isLoggedIn: !!token, login, logout, user }}>
-        {children}
-      </AuthContext.Provider>
-    );
+    setIsLoggedIn(false);
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout, user }}>
+    <AuthContext.Provider value={{ isLoggedIn, login, logout, user, token }}>
       {children}
     </AuthContext.Provider>
   );

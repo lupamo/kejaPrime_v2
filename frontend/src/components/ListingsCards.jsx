@@ -9,19 +9,14 @@ import { AuthContext } from "../utils/AuthContext";
 import "./listingsCards.css";
 import location_icon from "../assets/images/location_icon.png";
 
-
-const token = localStorage.getItem("access_token")
-
 const ListingsCards = () => {
     const navigate = useNavigate();
-    const { user, token } = useContext(AuthContext);
+    const { user, token, isLoggedIn } = useContext(AuthContext);
     const [listings, setListings] = useState([]);
     const [bookmarkedListings, setBookmarkedListings] = useState([]);
     const [filter, setFilter] = useState("all");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-
-    
 
     useEffect(() => {
         const fetchListings = async () => {
@@ -45,13 +40,12 @@ const ListingsCards = () => {
     useEffect(() => {
         const fetchBookmarks = async () => {
             if (!token) return;
-    
+
             try {
                 const response = await axios.get('http://localhost:8000/bookmarks/', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 if (response.status === 200) {
-                    // Extract just the property IDs from the bookmarks
                     const bookmarkedIds = response.data.map(bookmark => bookmark.property_id);
                     setBookmarkedListings(bookmarkedIds);
                 }
@@ -59,70 +53,68 @@ const ListingsCards = () => {
                 console.error("Error fetching bookmarks:", error);
             }
         };
-    
+
         fetchBookmarks();
-        
     }, [token]);
 
     const toggleBookmark = async (listingId) => {
-    if (!token) {
-        console.error("User not logged in");
-        setError("Please login to bookmark listings");
-        return; // Add this return statement - it was missing
-    }
+        if (!isLoggedIn || !token) {
+            console.error("User not logged in");
+            setError("Please login to bookmark listings");
+            return;
+        }
 
-    try {
-        const config = {
-            headers: { 
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        };
+        try {
+            const config = {
+                headers: { 
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            };
 
-        if (bookmarkedListings.includes(listingId)) {
-            // If already bookmarked, get the bookmark ID first
-            const bookmarksResponse = await axios.get(
-                'http://localhost:8000/bookmarks/',
-                config
-            );
-            const bookmark = bookmarksResponse.data.find(b => b.property_id === listingId);
-            
-            if (bookmark) {
-                await axios.delete(
-                    `http://localhost:8000/bookmarks/delete/${bookmark.id}`,
+            if (bookmarkedListings.includes(listingId)) {
+                const bookmarksResponse = await axios.get(
+                    'http://localhost:8000/bookmarks/',
                     config
                 );
-                setBookmarkedListings(prev => prev.filter(id => id !== listingId));
-            }
-        } else {
-            // If not bookmarked, add new bookmark
-            const response = await axios.post(
-                'http://localhost:8000/bookmarks/add',
-                {},  // Changed from null to empty object
-                {
-                    ...config,
-                    params: { property_id: listingId }
+                const bookmark = bookmarksResponse.data.find(b => b.property_id === listingId);
+                
+                if (bookmark) {
+                    await axios.delete(
+                        `http://localhost:8000/bookmarks/delete/${bookmark.id}`,
+                        config
+                    );
+                    setBookmarkedListings(prev => prev.filter(id => id !== listingId));
                 }
-            );
-            if (response.status === 200 || response.status === 201) {
-                setBookmarkedListings(prev => [...prev, listingId]);
+            } else {
+                const response = await axios.post(
+                    'http://localhost:8000/bookmarks/add',
+                    {},
+                    {
+                        ...config,
+                        params: { property_id: listingId }
+                    }
+                );
+                if (response.status === 200 || response.status === 201) {
+                    setBookmarkedListings(prev => [...prev, listingId]);
+                }
             }
+        } catch (error) {
+            console.error("Bookmark error:", error);
+            setError(error.response?.data?.detail || "Failed to bookmark property");
         }
-    } catch (error) {
-        console.error("Bookmark error:", {
-            status: error.response?.status,
-            data: error.response?.data,
-            message: error.message,
-            endpoint: error.config?.url
-        });
-        setError(error.response?.data?.detail || "Failed to bookmark property");
-    }
-};
+    };
+
     const filteredListings =
         filter === "all" ? listings : listings.filter((listing) => listing.property_type === filter);
 
-    if (loading) return <div className="text-center mt-4">Loading listings...</div>;
-    if (error) return <div className="alert alert-danger mt-4">{error}</div>;
+    if (loading) {
+        return <div className="text-center mt-4">Loading listings...</div>;
+    }
+
+    if (error) {
+        return <div className="alert alert-danger mt-4">{error}</div>;
+    }
 
     return (
         <>
