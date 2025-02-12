@@ -117,23 +117,25 @@ const ListingDetail = () => {
                         >
                             {listing.image_urls?.map((image, index) => (
                                 <SwiperSlide key={index}>
-                                    <div
-                                        className="card"
-                                        style={{
-                                            width: "80%",
-                                            height: "150px",
-                                            cursor: "pointer",
-                                            border: activeIndex === index ? "3px solid #007bff" : "none", // Highlight active thumbnail
-                                        }}
-                                        onClick={() => setActiveIndex(index)} // Set active index on thumbnail click
-                                    >
-                                        <img
-                                            src={image}
-                                            alt={`Thumbnail ${index}`}
-                                            className="card-img-top h-100"
-                                            style={{ objectFit: "cover" }}
-                                        />
+                                    <div className="back" style={{ width: "100%", height: "150px", border: "1px solid red" }}>
+                                        <div className="card"
+                                            style={{
+                                                width: "70%",
+                                                height: "auto",
+                                                cursor: "pointer",
+                                                border: activeIndex === index ? "3px solid #007bff" : "none", // Highlight active thumbnail
+                                            }}
+                                            onClick={() => setActiveIndex(index)} // Set active index on thumbnail click
+                                        >
+                                            <img
+                                                src={image}
+                                                alt={`Thumbnail ${index}`}
+                                                className="card-img-top h-100"
+                                                style={{ objectFit: "cover" }}
+                                            />
+                                        </div>
                                     </div>
+                                    
                                 </SwiperSlide>
                             ))}
                         </Swiper>
