@@ -10,6 +10,7 @@ import { BrowserRouter, Router, Routes, Route } from 'react-router-dom';
 import SignIn from './components/SignIn';
 import SignUp from './components/SignUp';
 import CreateListing from './components/CreateListing';
+import AboutUs from './pages/AboutUs';
 
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/sign-up" element={<SignUp />} />
+        <Route path="/about-us" element={<AboutUs />} />
       </Routes>
   </BrowserRouter>
   </AuthProvider>
