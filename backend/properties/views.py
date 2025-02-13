@@ -52,9 +52,8 @@ def get_property(property_id: str, db: Session = Depends(get_db)):
     property = db.query(models.Property).filter(models.Property.id == property_id).first()
     if not property:
         raise HTTPErros.not_found_error('Property not found')
-    # Add image URLs to the property
     property.image_urls = [img.image_url for img in db.query(models.PropertyImage)
-                           .filter(models.PropertyImage.property_id == property.id).all()]
+                               .filter(models.PropertyImage.property_id == property.id).all()]
     return property
 
 @property_router.post('/add')
@@ -90,7 +89,7 @@ def upload_images(
     files_data = []
 
     for file in files:
-        file_content = file.file.read()  # Read file content (avoid passing UploadFile)
+        file_content = file.file.read()  # Read file content
         files_data.append({
             "filename": file.filename,
             "content": file_content,
