@@ -1,68 +1,16 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { AuthContext } from '../utils/AuthContext';
 import BookmarkButton from '../components/BookmarkButton';
 import location_icon from '../assets/images/location_icon.png';
 import './Newlistings.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-
-const Newlistings = () => {
+const Newlistings = ({ listings }) => {
     const navigate = useNavigate();
-    const { token } = useContext(AuthContext);
-    const [listings, setListings] = useState([]);
-    const [bookmarkedListings, setBookmarkedListings] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
 
-    // Fetch listings from the backend
-    useEffect(() => {
-        const fetchListings = async () => {
-            try {
-                const response = await axios.get('http://localhost:8000/properties/', {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                if (response.status === 200) {
-                    setListings(response.data);
-                }
-            } catch (error) {
-                console.error('Error fetching listings:', error);
-                setError('Failed to load listings');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchListings();
-    }, [token]);
-
-
-    // Handle bookmark toggle
-    const toggleBookmark = async (listingId) => {
-        try {
-            if (bookmarkedListings.includes(listingId)) {
-                await axios.delete(`http://localhost:8000/bookmarks/${listingId}/`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                setBookmarkedListings(prev => prev.filter(id => id !== listingId));
-            } else {
-                await axios.post(`http://localhost:8000/bookmarks/add?property_id=${listingId}`, {}, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-                setBookmarkedListings(prev => [...prev, listingId]);
-            }
-        } catch (error) {
-            console.error('Bookmark error:', error);
-            setError('Failed to update bookmark');
-        }
-    };
-
-    // Get the first 4 listings
-    const firstFourListings = listings.slice(0, 4);
-
-    if (loading) return <div className="text-center mt-4">Loading listings...</div>;
-    if (error) return <div className="alert alert-danger mt-4">{error}</div>;
+    if (!listings.length) {
+        return <div className="text-center mt-4">No listings found</div>;
+    }
 
     return (
         <div className="d-flex justify-content-center top-10px" style={{ backgroundColor: "#f8f9fa", margin: "10px" }}>
@@ -75,7 +23,7 @@ const Newlistings = () => {
                 </div>
                 <div className="container mt-4">
                     <div className="row">
-                        {firstFourListings.map((listing) => (
+                        {listings.map((listing) => (
                             <div className="carding col-xl-3" key={listing.id}>
                                 <div className="listing-card shadow-sm">
                                     <div>
@@ -87,8 +35,8 @@ const Newlistings = () => {
                                         />
                                         <div style={{ display: 'flex', justifyContent: 'flex-end', marginRight: "10px" }}>
                                             <BookmarkButton
-                                                isBookmarked={bookmarkedListings.includes(listing.id)}
-                                                onClick={() => toggleBookmark(listing.id)}
+                                                isBookmarked={false}
+                                                onClick={() => {}}
                                                 style={{ zIndex: "1000" }}
                                             />
                                         </div>
