@@ -47,7 +47,7 @@ const Navbar = () => {
               <Link className="nav-link" to="/listings">Listings</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/">About Us</Link>
+              <Link className="nav-link" to="/about-us">About Us</Link>
             </li>
           </ul>
           <div className="d-flex align-items-center">
