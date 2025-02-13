@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Navbar from '../components/Navbar';
+import PropertyComments from '../components/PropertyComments';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../utils/AuthContext';
@@ -16,7 +17,7 @@ const ListingDetail = () => {
     const navigate = useNavigate();
     const { token } = useContext(AuthContext);
     const [listing, setListing] = useState(null);
-    const [activeIndex, setActiveIndex] = useState(0); // Track the active image index
+    const [activeIndex, setActiveIndex] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
@@ -150,6 +151,10 @@ const ListingDetail = () => {
                         {listing.description}
                     </p>
                 </div>
+            </div>
+            {/* Comments Section */}
+            <div className="container mt-4">
+                <PropertyComments propertyId={id} />
             </div>
         </>
     );
