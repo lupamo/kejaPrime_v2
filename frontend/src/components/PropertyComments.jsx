@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../utils/AuthContext';
+import axios from "axios";
 import defaultProfilePic from '../assets/images/sorry.png';
 
 const PropertyComments = ({ propertyId }) => {
@@ -12,8 +13,9 @@ const PropertyComments = ({ propertyId }) => {
     // Fetch comments
     const fetchComments = async () => {
         try {
-            const response = await axios.get(`http://localhost:8000/comments/${propertyId}`, {
-                headers: { Authorization: `Bearer ${token}` }
+            const response = await axios.get(`http://localhost:8000/comments/`, {
+                headers: { Authorization: `Bearer ${token}` },
+                params: { property_id: propertyId }
             });
             setComments(response.data);
         } catch (error) {
@@ -23,7 +25,9 @@ const PropertyComments = ({ propertyId }) => {
     };
 
     useEffect(() => {
-        fetchComments();
+        if (propertyId) {
+            fetchComments();
+        }
     }, [propertyId]);
 
     // Add new comment
@@ -33,23 +37,25 @@ const PropertyComments = ({ propertyId }) => {
         
         setLoading(true);
         setError('');
-    
+
         try {
-            await axios.post('http://localhost:8000/comments/add', {
-                property_id: propertyId,
-                content: newComment
-            }, {
+            await axios.post('http://localhost:8000/comments/add', null, {
                 headers: { 
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
+                },
+                params: {
+                    property_id: propertyId,
+                    content: newComment.trim()
                 }
             });
             
             setNewComment('');
-            fetchComments(); // Refresh comments
+            await fetchComments();
         } catch (error) {
-            console.error('Error adding comment:', error.response?.data || error.message);
-            setError(error.response?.data?.message || 'Failed to add comment. Please try again.');
+            console.error('Error adding comment:', error.response?.data);
+            const errorMessage = error.response?.data?.detail || 'Failed to add comment. Please try again.';
+            setError(errorMessage);
         } finally {
             setLoading(false);
         }
@@ -61,7 +67,7 @@ const PropertyComments = ({ propertyId }) => {
             await axios.delete(`http://localhost:8000/comments/delete/${commentId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            fetchComments(); // Refresh comments
+            await fetchComments();
         } catch (error) {
             console.error('Error deleting comment:', error);
             setError('Failed to delete comment');
@@ -92,9 +98,9 @@ const PropertyComments = ({ propertyId }) => {
                         <button 
                             type="submit" 
                             className="btn btn-primary mt-2"
-                            disabled={!newComment.trim()}
+                            disabled={!newComment.trim() || loading}
                         >
-                            Post Comment
+                            {loading ? 'Posting...' : 'Post Comment'}
                         </button>
                     </div>
                 </div>
