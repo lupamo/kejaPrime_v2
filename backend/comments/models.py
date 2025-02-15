@@ -8,6 +8,7 @@ class Comment(BaseModel):
     __tablename__ = 'comments'
 
     user_id = Column(String(256), ForeignKey('users.id'))
+    content = Column(String, nullable=False) # Comment changes----------------------------
     property_id = Column(String(256), ForeignKey('properties.id'))
 
     # relationships

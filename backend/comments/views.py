@@ -14,6 +14,7 @@ comment_router = APIRouter(prefix='/comments', tags=['comments'])
 @comment_router.post('/add')
 def add_comment(
     property_id: str,
+    content: str,# Comment changes----------------------------
     db: Session = Depends(get_db),
     credentials: HTTPBasicCredentials = Depends(security)
     ):
@@ -27,7 +28,8 @@ def add_comment(
     
     new_comment = models.Comment(
         user_id=user.id,
-        property_id=property_id
+        property_id=property_id,
+        content=content# Comment changes----------------------------
     )
     db.add(new_comment)
     db.commit()
