@@ -22,7 +22,7 @@ def login(
     """
     existing_user = db.query(models.User).filter(models.User.email == user.email).first()
     if not existing_user:
-        raise HTTPErros.not_found_error('User not found')
+        raise HTTPErros.not_found('User not found')
     if not AuthHandler.verify_password(user.password, existing_user.hashed_passd):
         raise HTTPErros.unauthorized("wrong password")
     

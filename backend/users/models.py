@@ -16,5 +16,6 @@ class User(BaseModel):
   properties = relationship('Property', back_populates='user', cascade="all, delete")
   bookmarks = relationship('Bookmark', back_populates='user', cascade="all, delete")
   comments = relationship('Comment', back_populates='user', cascade="all, delete")
+  replies = relationship('Reply', back_populates='user', cascade="all, delete")
 
   
