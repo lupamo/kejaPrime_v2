@@ -67,4 +67,83 @@ def delete_comment(
     db.delete(comment)
     db.commit()
     return {'message': 'Comment deleted successfully'}
+
+
+@comment_router.post('/reply')
+def post_reply(
+    content: str,
+    comment_id: str,
+    db: Session = Depends(get_db),
+    credentials: HTTPBasicCredentials = Depends(security)
+    ):
+    """
+    post a reply to a comment made
+    """
+    user = decode_credentials(credentials, db)
+
+    if not user:
+        raise HTTPErros.not_found('user not found')
+    
+    comment = db.query(models.Comment).filter(models.Comment.id == comment_id).first()
+    if not comment:
+        raise HTTPErros('comment does not exist')
+    
+    reply = models.Reply(
+        comment_id=comment_id,
+        content=content,
+        user_id=user.id
+    )
+    db.add(reply)
+    db.commit()
+    db.refresh(reply)
+
+    return reply
+
+
+@comment_router.get('/replies')
+def all_replies(
+    comment_id: str,
+    db: Session = Depends(get_db),
+    credentials: HTTPBasicCredentials = Depends(security)
+    ):
+    """
+    retrieve all replies of a comment
+    """
+    user = decode_credentials(credentials, db)
+    if not user:
+        raise HTTPErros.not_found("user not found")
+    
+    comment = db.query(models.Comment).filter(models.Comment.id == comment_id).first()
+    if not comment:
+        raise HTTPErros.not_found('comment does not exist')
+    
+    replies = db.query(models.Reply).filter(models.Reply.comment_id == comment_id).all()
+    if not replies:
+        raise HTTPErros.not_found("no replies found")
+    
+    return replies
+
+
+@comment_router.delete('/reply/{reply_id}')
+def delete_reply(
+    reply_id: str,
+    db: Session = Depends(get_db),
+    credentials: HTTPBasicCredentials = Depends(security)
+    ):
+
+    user = decode_credentials(credentials, db)
+    if not user:
+        raise HTTPErros.not_found("user not found")
+    
+    reply = db.query(models.Reply).filter(models.Reply.id == reply_id).first()
+    if not reply:
+        raise HTTPErros.not_found("reply not found")
+    
+    if user.id != reply.user_id:
+        raise HTTPErros.unauthorized("you are not authorized to delete this reply")
+    
+    db.delete(reply)
+    db.commit()
+
+    return {"message": "reply deleted succesfully"}
     
