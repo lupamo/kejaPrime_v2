@@ -28,7 +28,7 @@ const Profile = () => {
             setListedHouses(response.data);
         } catch (error) {
             console.error('Error fetching listed houses:', error);
-            setError('Failed to load listed houses');
+            // setError('Failed to load listed houses');
         } finally {
             setLoading(false);
         }
@@ -114,13 +114,13 @@ const Profile = () => {
                             className="rounded-circle"
                             style={{ width: '150px', height: '150px', objectFit: 'cover' }}
                         />
-                        <img
+                        {/* <img
                             src={cameraIcon}
                             alt="camera upload"
                             className="position-absolute bottom-0 end-0 rounded-circle"
                             style={{ cursor: 'pointer', width: '30px', height: '30px' }}
                             onClick={triggerFileInput}
-                        />
+                        /> */}
                         <input
                             type="file"
                             id="profile-picture-upload"

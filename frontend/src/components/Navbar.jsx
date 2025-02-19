@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
 import { AuthContext } from '../utils/AuthContext';
@@ -10,15 +10,25 @@ const Navbar = () => {
   const { isLoggedIn, logout } = useContext(AuthContext);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const navigate = useNavigate();
+  const profileMenuRef = useRef(null);
 
-  // Handle logout
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
+        setShowProfileMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const handleLogout = () => {
     navigate('/sign-in');
     setShowProfileMenu(false);
     logout();
   };
 
-  // Toggle profile menu visibility
   const toggleProfileMenu = () => {
     setShowProfileMenu(!showProfileMenu);
   };
@@ -26,20 +36,90 @@ const Navbar = () => {
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary">
       <div className="container-fluid">
+        {/* Logo Section */}
         <a className="navbar-brand" href="/">KejaPrime</a>
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
+
+        {/* Mobile Profile and Toggle */}
+        <div className="d-flex align-items-center order-lg-last">
+          {isLoggedIn && (
+            <div className="profile-dropdown d-lg-none position-relative me-2" ref={profileMenuRef}>
+              <button
+                className="btn-profile p-0 border-0 bg-transparent"
+                onClick={toggleProfileMenu}
+                aria-label="Toggle profile menu"
+              >
+                <img
+                  src={frown}
+                  alt="Profile"
+                  className="rounded-full"
+                  style={{ width: '40px', height: '40px', borderRadius: '50%' }}
+                />
+              </button>
+              {showProfileMenu && (
+                <div className="profile-menu shadow-sm" style={{
+                  position: 'absolute',
+                  right: 0,
+                  top: '100%',
+                  zIndex: 1000,
+                  backgroundColor: 'white',
+                  borderRadius: '8px',
+                  padding: '0.5rem 0',
+                  minWidth: '200px',
+                  border: '1px solid rgba(0,0,0,0.1)'
+                }}>
+                  <div 
+                    className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => {
+                      navigate('/profile');
+                      setShowProfileMenu(false);
+                    }}
+                  >
+                    Profile
+                  </div>
+                  <div 
+                    className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => {
+                      navigate('/my-listings');
+                      setShowProfileMenu(false);
+                    }}
+                  >
+                    My Listings
+                  </div>
+                  <div 
+                    className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => {
+                      navigate('/settings');
+                      setShowProfileMenu(false);
+                    }}
+                  >
+                    Settings
+                  </div>
+                  <div 
+                    className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+          <button
+            className="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span className="navbar-toggler-icon"></span>
+          </button>
+        </div>
+        
+        {/* Main Navigation Content */}
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul className="navbar-nav me-auto mb-2 mb-lg-0 ms-auto">
+          <ul className="navbar-nav mx-auto mb-2 mb-lg-0 align-items-center">
             <li className="nav-item">
               <Link className="nav-link active" aria-current="page" to="/">Home</Link>
             </li>
@@ -50,10 +130,12 @@ const Navbar = () => {
               <Link className="nav-link" to="/about-us">About Us</Link>
             </li>
           </ul>
+
+          {/* Right-side buttons */}
           <div className="d-flex align-items-center">
             {isLoggedIn ? (
               <>
-                <div className="profile-dropdown position-relative">
+                <div className="profile-dropdown d-none d-lg-block position-relative me-2" ref={profileMenuRef}>
                   <button
                     className="btn-profile p-0 border-0 bg-transparent"
                     onClick={toggleProfileMenu}
@@ -63,21 +145,52 @@ const Navbar = () => {
                       src={frown}
                       alt="Profile"
                       className="rounded-full"
-                      style={{ width: '50px', height: '50px', borderRadius: '50%' }}
+                      style={{ width: '40px', height: '40px', borderRadius: '50%' }}
                     />
                   </button>
                   {showProfileMenu && (
-                    <div className="profile-menu">
-                      <div className="profile-menu-item" onClick={() => navigate('/profile')}>
+                    <div className="profile-menu shadow-sm" style={{
+                      position: 'absolute',
+                      right: 0,
+                      top: '100%',
+                      zIndex: 1000,
+                      backgroundColor: 'white',
+                      borderRadius: '8px',
+                      padding: '0.5rem 0',
+                      minWidth: '200px',
+                      border: '1px solid rgba(0,0,0,0.1)'
+                    }}>
+                      <div 
+                        className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                        onClick={() => {
+                          navigate('/profile');
+                          setShowProfileMenu(false);
+                        }}
+                      >
                         Profile
                       </div>
-                      <div className="profile-menu-item" onClick={() => navigate('/my-listings')}>
+                      <div 
+                        className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                        onClick={() => {
+                          navigate('/my-listings');
+                          setShowProfileMenu(false);
+                        }}
+                      >
                         My Listings
                       </div>
-                      <div className="profile-menu-item" onClick={() => navigate('/settings')}>
+                      <div 
+                        className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                        onClick={() => {
+                          navigate('/settings');
+                          setShowProfileMenu(false);
+                        }}
+                      >
                         Settings
                       </div>
-                      <div className="profile-menu-item text-danger" onClick={handleLogout}>
+                      <div 
+                        className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600"
+                        onClick={handleLogout}
+                      >
                         Logout
                       </div>
                     </div>

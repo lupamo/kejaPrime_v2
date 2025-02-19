@@ -54,12 +54,13 @@
 }
   
 /* Responsive styles */
-@media (max-width: 991px) {
-	.profile-menu {
-		position: fixed;
-		top: auto;
-		right: 20px;
-		width: calc(100% - 40px);
-		max-width: 250px;
+@media (min-width: 992px) {
+	.navbar-nav {
+	  flex: 1;
+	  justify-content: center;
 	}
-}
+	
+	.nav-item {
+	  margin: 0 0.5rem;
+	}
+  }
