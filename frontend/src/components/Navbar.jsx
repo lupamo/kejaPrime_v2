@@ -170,24 +170,6 @@ const Navbar = () => {
                         Profile
                       </div>
                       <div 
-                        className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => {
-                          navigate('/my-listings');
-                          setShowProfileMenu(false);
-                        }}
-                      >
-                        My Listings
-                      </div>
-                      <div 
-                        className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => {
-                          navigate('/settings');
-                          setShowProfileMenu(false);
-                        }}
-                      >
-                        Settings
-                      </div>
-                      <div 
                         className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600"
                         onClick={handleLogout}
                       >
