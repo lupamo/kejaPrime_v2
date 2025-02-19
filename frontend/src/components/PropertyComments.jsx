@@ -73,7 +73,6 @@ const PropertyComments = ({ propertyId }) => {
             setError('Failed to delete comment');
         }
     };
-
     return (
         <div className="comments-section mt-4">
             <h3 className="mb-4" style={{ color: '#203856' }}>Comments</h3>
@@ -81,6 +80,7 @@ const PropertyComments = ({ propertyId }) => {
             {/* Comment Form */}
             <form onSubmit={handleAddComment} className="mb-4">
                 <div className="d-flex gap-3">
+                    <p>{user.name}</p>
                     <img 
                         src={user?.profile_pic || defaultProfilePic} 
                         alt="Profile" 
