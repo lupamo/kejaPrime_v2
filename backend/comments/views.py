@@ -121,7 +121,19 @@ def all_replies(
     if not replies:
         raise HTTPErros.not_found("no replies found")
     
-    return replies
+    # Format response to include user data
+    return [{
+        "id": reply.id,
+        "content": reply.content,
+        "comment_id": reply.comment_id,
+        "user_id": reply.user_id,
+        "created_at": reply.created_at,
+        "user": {
+            "id": reply.user.id,
+            "username": reply.user.username,
+            "profile_pic": reply.user.profile_pic if hasattr(reply.user, 'profile_pic') else None
+        }
+    } for reply in replies]
 
 
 @comment_router.delete('/reply/{reply_id}')
