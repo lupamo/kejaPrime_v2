@@ -4,15 +4,17 @@ import '@popperjs/core';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Navbar from '../components/Navbar';
 import axios from 'axios';
+import BookmarkButton from "../components/BookmarkButton";
 import { AuthContext } from '../utils/AuthContext';
 import defaultProfilePic from '../assets/images/sorry.png'; // Add a default profile picture
 import cameraIcon from '../assets/images/camera.png'; // Add a default profile picture
 
 
 const Profile = () => {
-    const { user, token } = useContext(AuthContext);
+    const { user, token, isLoggedIn } = useContext(AuthContext);
     const [listedHouses, setListedHouses] = useState([]);
     const [bookmarkedItems, setBookmarkedItems] = useState([]);
+    const [bookmarkedIds, setBookmarkedIds] = useState([]);
     const [activeTab, setActiveTab] = useState('details');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -38,14 +40,22 @@ const Profile = () => {
     const fetchBookmarkedItems = async () => {
         setLoading(true);
         try {
-            const response = await axios.get('http://localhost:8000/bookmarks/', {
+            const bookmarksResponse = await axios.get('http://localhost:8000/bookmarks/', {
                 headers:  
                 { Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json'
                 },
             });
+
+            // Store bookmark IDs for easy access
+            const bookmarkMap = new Map(
+                bookmarksResponse.data.map(bookmark => [bookmark.property_id, bookmark.id])
+            );
+            setBookmarkedIds(bookmarkMap);
+
+
             //fetching the full details for each bookmarked property
-            const propertyPromises = response.data.map(bookmark => 
+            const propertyPromises = bookmarksResponse.data.map(bookmark => 
                 axios.get(`http://localhost:8000/properties/${bookmark.property_id}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 })
@@ -63,6 +73,40 @@ const Profile = () => {
         }
     };
 
+    // Toggle bookmark function
+    const toggleBookmark = async (propertyId) => {
+        if (!isLoggedIn || !token) {
+            setError("Please login to manage bookmarks");
+            return;
+        }
+
+        try {
+            const config = {
+                headers: { 
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            const bookmarkId = bookmarkedIds.get(propertyId);
+            await axios.delete(
+                `http://localhost:8000/bookmarks/delete/${bookmarkId}`,
+                config
+            );
+
+            // Update the bookmarked items list
+            setBookmarkedItems(prev => prev.filter(item => item.id !== propertyId));
+            setBookmarkedIds(prev => {
+                const newMap = new Map(prev);
+                newMap.delete(propertyId);
+                return newMap;
+            });
+
+        } catch (error) {
+            console.error("Error removing bookmark:", error);
+            setError(error.response?.data?.detail || "Failed to remove bookmark");
+        }
+    };
     //Fetch data when the tabs change
 
     useEffect(() => {
@@ -76,7 +120,7 @@ const Profile = () => {
     }, [activeTab, token]);
 
     //Handle profile picture change
-    const handleProfilePictureChange = async (eveny) => {
+    const handleProfilePictureChange = async (event) => {
         const file = event.target.files[0];
         if (file) {
             try {
@@ -239,6 +283,12 @@ const Profile = () => {
                                                     className="card-img-top"
                                                     style={{ height: '200px', objectFit: 'cover' }}
                                                 />
+                                                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                                                    <BookmarkButton
+                                                        isBookmarked={true}
+                                                        onClick={() => toggleBookmark(property.id)}
+                                                    />
+                                                </div>
                                                 <div className="card-body">
                                                     <h5 className="card-title">{property.title}</h5>
                                                     <p className="card-text">{property.location}</p>
