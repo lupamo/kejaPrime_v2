@@ -28,6 +28,7 @@ def add_comment(
     
     new_comment = models.Comment(
         user_id=user.id,
+        username=user.username,
         property_id=property_id,
         content=content# Comment changes----------------------------
     )
@@ -91,7 +92,8 @@ def post_reply(
     reply = models.Reply(
         comment_id=comment_id,
         content=content,
-        user_id=user.id
+        user_id=user.id,
+        username=user.username
     )
     db.add(reply)
     db.commit()
@@ -122,18 +124,7 @@ def all_replies(
         raise HTTPErros.not_found("no replies found")
     
     # Format response to include user data
-    return [{
-        "id": reply.id,
-        "content": reply.content,
-        "comment_id": reply.comment_id,
-        "user_id": reply.user_id,
-        "created_at": reply.created_at,
-        "user": {
-            "id": reply.user.id,
-            "username": reply.user.username,
-            "profile_pic": reply.user.profile_pic if hasattr(reply.user, 'profile_pic') else None
-        }
-    } for reply in replies]
+    return replies
 
 
 @comment_router.delete('/reply/{reply_id}')

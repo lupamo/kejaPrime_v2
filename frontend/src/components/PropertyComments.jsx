@@ -15,6 +15,7 @@ const PropertyComments = ({ propertyId }) => {
     const [expandedComments, setExpandedComments] = useState({});
     const [replyingTo, setReplyingTo] = useState(null);
 
+    console.log(user);
     // Fetch comments
     const fetchComments = async () => {
         try {

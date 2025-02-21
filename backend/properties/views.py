@@ -141,6 +141,46 @@ def process_images_upload(property_id: str, files_data: List[dict]):
     finally:
         db.close()
 
+
+@property_router.delete('/{property_id}')
+def delete_property(
+    property_id: str,
+    credentials: HTTPBasicCredentials = Depends(security),
+    db: Session = Depends(get_db)
+):
+    """
+    Delete a property and its corresponding images from Supabase
+    """
+    user = decode_credentials(credentials, db)
+
+    # Check if property exists and belongs to the user
+    property = db.query(models.Property).filter(models.Property.id == property_id).first()
+    if not property:
+        raise HTTPErros.not_found("Property not found")
+    
+    if property.agent != user.id:
+        raise HTTPErros.unauthorized("You are not authorized to delete this property")
+
+    # Get all property images
+    images = db.query(models.PropertyImage).filter(models.PropertyImage.property_id == property_id).all()
+
+    # Delete images from Supabase
+    for img in images:
+        file_name = img.image_url.split("/")[-1]  # Extract file name from URL
+        try:
+            supabase.storage.from_("property_images").remove(file_name)
+        except Exception as e:
+            print(f"Error deleting image {file_name}: {e}")
+
+    # Delete images from database
+    db.query(models.PropertyImage).filter(models.PropertyImage.property_id == property_id).delete()
+
+    # Delete the property
+    db.delete(property)
+    db.commit()
+
+    return {"message": "Property and its images successfully deleted"}
+
 @property_router.post('/search')
 def search(query: str, db: Session = Depends(get_db)):
     """
