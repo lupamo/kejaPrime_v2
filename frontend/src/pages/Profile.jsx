@@ -5,6 +5,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Navbar from '../components/Navbar';
 import axios from 'axios';
 import BookmarkButton from "../components/BookmarkButton";
+import { Trash2 } from 'lucide-react';
 import { AuthContext } from '../utils/AuthContext';
 import defaultProfilePic from '../assets/images/sorry.png'; // Add a default profile picture
 import cameraIcon from '../assets/images/camera.png'; // Add a default profile picture
@@ -145,6 +146,34 @@ const Profile = () => {
         document.getElementById('profile-picture-upload').click();
     };
 
+    //handle delete listing
+    const handleDeleteProperty = async (propertyId) => {
+        if (!token) {
+            setError('Please login to delete listings');
+            return;
+        }
+        //confrmation before deletion
+        const isConfirmed = window.confirm("Are you sure you want to delete this listing? This action cannot be undone.");
+    
+        if (!isConfirmed) {
+            return; // If user clicks Cancel, do nothing
+        }
+
+        try {
+            await axios.delete(`http://localhost:8000/properties/${propertyId}`, {
+                headers: { 
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            setListedHouses(prev => prev.filter(listing => listing.id !== propertyId));
+        } catch (error) {
+            console.error('Error deleting property:', error);
+            setError(error.response?.data?.detail || 'Failed to delete property');
+        }
+    };
+
     return (
         <>
             <Navbar />
@@ -249,6 +278,15 @@ const Profile = () => {
                                                     className="card-img-top"
                                                     style={{ height: '200px', objectFit: 'cover' }}
                                                 />
+
+                                                {/* ----Delete Button---- */}
+                                                <button
+                                                    onClick={() => handleDeleteProperty(listing.id)}
+                                                    className="btn btn-danger btn-sm position-absolute top-0 end-0 m-2"
+                                                    style={{zIndex: 1}}
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
                                                 <div className="card-body">
                                                     <h5 className="card-title">{listing.title}</h5>
                                                     <p className="card-text">{listing.location}</p>
