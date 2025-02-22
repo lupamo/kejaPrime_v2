@@ -4,6 +4,7 @@ import '@popperjs/core';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Navbar from '../components/Navbar';
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 import BookmarkButton from "../components/BookmarkButton";
 import { Trash2 } from 'lucide-react';
 import { AuthContext } from '../utils/AuthContext';
@@ -17,6 +18,7 @@ const Profile = () => {
     const [previewUrl, setPreviewUrl] = useState(user?.profile_pic || defaultProfilePic);
     const [isUploading, setIsUploading] = useState(false);
     const [bookmarkedItems, setBookmarkedItems] = useState([]);
+    const navigate = useNavigate();
     const [bookmarkedIds, setBookmarkedIds] = useState([]);
     const [activeTab, setActiveTab] = useState('details');
     const [loading, setLoading] = useState(false);
@@ -26,7 +28,7 @@ const Profile = () => {
     const fetchListedHouses = async () => {
         setLoading(true);
         try {
-            const response = await axios.get('http://localhost:8000/properties/me', {
+            const response = await axios.get('https://kejaprime-v2.onrender.com/properties/me', {
                 headers: { Authorization: `Bearer ${token}` },
             });
             console.log('Listed houses response:', response.data);
@@ -42,7 +44,7 @@ const Profile = () => {
      // Fetch user data after profile picture update
      const fetchUpdatedUserData = async () => {
         try {
-            const response = await axios.get('http://localhost:8000/users/me', {
+            const response = await axios.get('https://kejaprime-v2.onrender.com/users/me', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setUser(response.data); // Update the global user state
@@ -63,7 +65,7 @@ const Profile = () => {
     const fetchBookmarkedItems = async () => {
         setLoading(true);
         try {
-            const bookmarksResponse = await axios.get('http://localhost:8000/bookmarks/', {
+            const bookmarksResponse = await axios.get('https://kejaprime-v2.onrender.com/bookmarks/', {
                 headers:  
                 { Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json'
@@ -79,7 +81,7 @@ const Profile = () => {
 
             //fetching the full details for each bookmarked property
             const propertyPromises = bookmarksResponse.data.map(bookmark => 
-                axios.get(`http://localhost:8000/properties/${bookmark.property_id}`, {
+                axios.get(`https://kejaprime-v2.onrender.com/${bookmark.property_id}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 })
             );
@@ -113,7 +115,7 @@ const Profile = () => {
 
             const bookmarkId = bookmarkedIds.get(propertyId);
             await axios.delete(
-                `http://localhost:8000/bookmarks/delete/${bookmarkId}`,
+                `https://kejaprime-v2.onrender.com/${bookmarkId}`,
                 config
             );
 
@@ -169,7 +171,7 @@ const Profile = () => {
             formData.append('file', file);
             const response = await axios({
                 method: 'POST',
-                url: 'http://localhost:8000/users/avatar',
+                url: 'https://kejaprime-v2.onrender.com/users/avatar',
                 data: formData,
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -215,7 +217,7 @@ const Profile = () => {
         }
 
         try {
-            await axios.delete(`http://localhost:8000/properties/${propertyId}`, {
+            await axios.delete(`https://kejaprime-v2.onrender.com/${propertyId}`, {
                 headers: { 
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -388,7 +390,11 @@ const Profile = () => {
                                                 >
                                                     <Trash2 size={16} />
                                                 </button>
-                                                <div className="card-body">
+                                                <div 
+                                                    className="card-body"
+                                                    onClick={() => navigate(`/listings/${listing.id}`)}
+                                                    style={{ cursor: "pointer"}}
+                                                >
                                                     <h5 className="card-title">{listing.title}</h5>
                                                     <p className="card-text">{listing.location}</p>
                                                     <p className="card-text">Ksh {listing.price}/month</p>
@@ -428,7 +434,11 @@ const Profile = () => {
                                                         onClick={() => toggleBookmark(property.id)}
                                                     />
                                                 </div>
-                                                <div className="card-body">
+                                                <div 
+                                                    className="card-body"
+                                                    onClick={() => navigate(`/listings/${listing.id}`)}
+                                                    style={{ cursor: "pointer"}}
+                                                >
                                                     <h5 className="card-title">{property.title}</h5>
                                                     <p className="card-text">{property.location}</p>
                                                     <p className="card-text">Ksh {property.price}/month</p>

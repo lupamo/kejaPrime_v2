@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
 
     const fetchUser = async () => {
       try {
-      const response = await axios.get('http://localhost:8000/users/me', {
+      const response = await axios.get('https://kejaprime-v2.onrender.com/users/me', {
         headers: { Authorization: `Bearer ${storedToken}` },
       });
       setUser(response.data);
@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
       setToken(access_token);
 
       // Fetch user details after login
-      const response = await axios.get('http://localhost:8000/users/me', {
+      const response = await axios.get('https://kejaprime-v2.onrender.com/users/me', {
         headers: { Authorization: `Bearer ${access_token}` },
       });
 

@@ -19,7 +19,7 @@ const PropertyComments = ({ propertyId }) => {
     // Fetch comments
     const fetchComments = async () => {
         try {
-            const response = await axios.get(`http://localhost:8000/comments/`, {
+            const response = await axios.get(`https://kejaprime-v2.onrender.com/comments/`, {
                 headers: { Authorization: `Bearer ${token}` },
                 params: { property_id: propertyId }
             });
@@ -38,7 +38,7 @@ const PropertyComments = ({ propertyId }) => {
     // Fetch replies for a specific comment
     const fetchReplies = async (commentId) => {
         try {
-            const response = await axios.get(`http://localhost:8000/comments/replies`, {
+            const response = await axios.get(`https://kejaprime-v2.onrender.com/comments/replies`, {
                 headers: { Authorization: `Bearer ${token}` },
                 params: { comment_id: commentId }
             });
@@ -85,7 +85,7 @@ const PropertyComments = ({ propertyId }) => {
         setError('');
 
         try {
-            await axios.post('http://localhost:8000/comments/add', null, {
+            await axios.post('https://kejaprime-v2.onrender.com/comments/add', null, {
                 headers: { 
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -113,7 +113,7 @@ const PropertyComments = ({ propertyId }) => {
         setError('');
 
         try {
-            await axios.post('http://localhost:8000/comments/reply', null, {
+            await axios.post('https://kejaprime-v2.onrender.com/comments/reply', null, {
                 headers: { 
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -138,7 +138,7 @@ const PropertyComments = ({ propertyId }) => {
     // Delete comment
     const handleDeleteComment = async (commentId) => {
         try {
-            await axios.delete(`http://localhost:8000/comments/delete/${commentId}`, {
+            await axios.delete(`https://kejaprime-v2.onrender.com/comments/delete/${commentId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             await fetchComments();
@@ -151,7 +151,7 @@ const PropertyComments = ({ propertyId }) => {
     // Delete reply
     const handleDeleteReply = async (replyId, commentId) => {
         try {
-            await axios.delete(`http://localhost:8000/comments/reply/${replyId}`, {
+            await axios.delete(`https://kejaprime-v2.onrender.com/comments/reply/${replyId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             await fetchReplies(commentId);
