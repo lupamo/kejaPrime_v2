@@ -8,12 +8,14 @@ import BookmarkButton from "../components/BookmarkButton";
 import { Trash2 } from 'lucide-react';
 import { AuthContext } from '../utils/AuthContext';
 import defaultProfilePic from '../assets/images/sorry.png'; // Add a default profile picture
-import cameraIcon from '../assets/images/camera.png'; // Add a default profile picture
+import { Camera } from 'lucide-react';
 
 
 const Profile = () => {
-    const { user, token, isLoggedIn } = useContext(AuthContext);
+    const { user, token, isLoggedIn, setUser } = useContext(AuthContext);
     const [listedHouses, setListedHouses] = useState([]);
+    const [previewUrl, setPreviewUrl] = useState(user?.profile_pic || defaultProfilePic);
+    const [isUploading, setIsUploading] = useState(false);
     const [bookmarkedItems, setBookmarkedItems] = useState([]);
     const [bookmarkedIds, setBookmarkedIds] = useState([]);
     const [activeTab, setActiveTab] = useState('details');
@@ -36,6 +38,26 @@ const Profile = () => {
             setLoading(false);
         }
     };
+
+     // Fetch user data after profile picture update
+     const fetchUpdatedUserData = async () => {
+        try {
+            const response = await axios.get('http://localhost:8000/users/me', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setUser(response.data); // Update the global user state
+        } catch (error) {
+            console.error('Error fetching updated user data:', error);
+            setError('Failed to fetch updated user data');
+        }
+    };
+
+    // Add this useEffect to update preview when user data changes
+    useEffect(() => {
+        if (user?.profile_pic) {
+            setPreviewUrl(user.profile_pic);
+        }
+    }, [user?.profile_pic]);
 
     //fetch bookmarked items from backend
     const fetchBookmarkedItems = async () => {
@@ -120,30 +142,63 @@ const Profile = () => {
         }
     }, [activeTab, token]);
 
+    //update profile picture preview when user changes profile picture
+    useEffect(() => {
+        setPreviewUrl(user?.profile_pic || defaultProfilePic);
+    }, [user?.profile_pic]);
+
     //Handle profile picture change
     const handleProfilePictureChange = async (event) => {
         const file = event.target.files[0];
-        if (file) {
-            try {
-                const formData = new FormData();
-                formData.append('profile_pic', file);
-                
-                const response = await axios.patch('http://localhost:8000/users/me', formData, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
-                console.log('Profile picture updated:', response.data);
-            } catch (error) {
-                console.error('Error updating profile picture:', error);
-                setError('Failed to update profile picture');
-            }
+        if (!file) {
+            return;
         }
-    };
-    // Trigger file input click
-    const triggerFileInput = () => {
-        document.getElementById('profile-picture-upload').click();
+
+        //create preview URL
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setPreviewUrl(reader.result);
+        };
+        reader.readAsDataURL(file);
+        
+        setIsUploading(true);
+        setError('');
+
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            const response = await axios({
+                method: 'POST',
+                url: 'http://localhost:8000/users/avatar',
+                data: formData,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json',
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            if (response.data?.data?.publicUrl) {
+                const newProfilePicUrl = response.data.data.publicUrl;
+                setPreviewUrl(newProfilePicUrl);
+
+                // Fetch updated user data after profile picture update
+                setUser(prevUser => ({
+                    ...prevUser,
+                    profile_pic: newProfilePicUrl
+                }));
+                
+                await fetchUpdatedUserData();
+
+            }
+        } catch (error) {
+            console.error('Upload error:', error);
+            setError('Failed to update profile picture');
+            setPreviewUrl(user?.profile_pic || defaultProfilePic);
+        } finally {
+            setIsUploading(false);
+        }
+
     };
 
     //handle delete listing
@@ -181,26 +236,72 @@ const Profile = () => {
                 {/* Profile Picture and Name Section */}
                 <div className="text-center mb-4">
                     <div className="position-relative d-inline-block">
-                        <img
-                            src={user?.profile_pic || defaultProfilePic}
-                            alt="Profile"
-                            className="rounded-circle"
-                            style={{ width: '150px', height: '150px', objectFit: 'cover' }}
-                        />
-                        {/* <img
-                            src={cameraIcon}
-                            alt="camera upload"
-                            className="position-absolute bottom-0 end-0 rounded-circle"
-                            style={{ cursor: 'pointer', width: '30px', height: '30px' }}
-                            onClick={triggerFileInput}
-                        /> */}
+                        <div 
+                            className='rounded-circle overflow-hidden'
+                            style={{ 
+                                width: '150px', 
+                                height: '150px',
+                                position: 'relative'
+                            }}
+                        >
+                             <img
+                                src={previewUrl}
+                                alt="Profile"
+                                className="w-100 h-100"
+                                style={{ 
+                                    objectFit: 'cover',
+                                }}
+                                onError={(e) => {
+                                    e.target.src = defaultProfilePic;
+                                }}
+                            />
+                            {isUploading && (
+                            <div 
+                                className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center"
+                                style={{ 
+                                    backgroundColor: 'rgba(0, 0, 0, 0.5)'
+                                }}
+                            >
+                                <div className="spinner-border text-white" role="status">
+                                        <span className="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                            )}
+                        </div>
+                        
+                        <label 
+                            htmlFor="profile-picture-upload" 
+                            className="absolute bottom-0 right-0 p-2 bg-white rounded-full shadow-lg cursor-pointer hover:bg-gray-100 transition-colors"
+                            style={{
+                                bottom: '5px',
+                                right: '5px',
+                                backgroundColor: 'white',
+                                borderRadius: '50%',
+                                padding: '8px',
+                                cursor: 'pointer',
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                                transition: 'transform 0.2s',
+                                zIndex: 2
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                            onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                        >
+                            <Camera size={20} className="text-gray-600" />
+                        </label>
+                        
                         <input
                             type="file"
                             id="profile-picture-upload"
                             onChange={handleProfilePictureChange}
-                            style={{ display: 'none' }}
+                            className="d-none"
                             accept="image/*"
                         />
+                        
+                        {error && (
+                            <div className="alert alert-danger mt-2">
+                                {error}
+                            </div>
+                        )}
                     </div>
                     <h3 className="mt-3">{user?.username || 'User'}</h3>
                     {/* <p className="text-muted">{user?.location || 'No location specified'}</p> */}

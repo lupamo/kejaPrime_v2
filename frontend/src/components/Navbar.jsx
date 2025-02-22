@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
+import defaultProfilePic from '../assets/images/sorry.png';
 import { AuthContext } from '../utils/AuthContext';
-import frown from '../assets/images/sorry.png';
 import './navbar.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Navbar = () => {
-  const { isLoggedIn, logout } = useContext(AuthContext);
+  const { isLoggedIn, logout, user} = useContext(AuthContext);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const navigate = useNavigate();
   const profileMenuRef = useRef(null);
@@ -29,6 +29,22 @@ const Navbar = () => {
     logout();
   };
 
+  // Profile picture component for reusability
+  const ProfilePicture = React.memo(() => (
+    <img
+        src={user?.profile_pic || defaultProfilePic}
+        alt="Profile"
+        className="rounded-full"
+        style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }}
+        onError={(e) => {
+            e.target.src = defaultProfilePic;
+        }}
+    />
+  ));
+  useEffect(() => {
+    // This will re-render the ProfilePicture when user data changes
+  }, [user]);
+
   const toggleProfileMenu = () => {
     setShowProfileMenu(!showProfileMenu);
   };
@@ -48,12 +64,7 @@ const Navbar = () => {
                 onClick={toggleProfileMenu}
                 aria-label="Toggle profile menu"
               >
-                <img
-                  src={frown}
-                  alt="Profile"
-                  className="rounded-full"
-                  style={{ width: '40px', height: '40px', borderRadius: '50%' }}
-                />
+               <ProfilePicture />
               </button>
               {showProfileMenu && (
                 <div className="profile-menu shadow-sm" style={{
@@ -84,15 +95,6 @@ const Navbar = () => {
                     }}
                   >
                     My Listings
-                  </div>
-                  <div 
-                    className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => {
-                      navigate('/settings');
-                      setShowProfileMenu(false);
-                    }}
-                  >
-                    Settings
                   </div>
                   <div 
                     className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600"
@@ -141,12 +143,7 @@ const Navbar = () => {
                     onClick={toggleProfileMenu}
                     aria-label="Toggle profile menu"
                   >
-                    <img
-                      src={frown}
-                      alt="Profile"
-                      className="rounded-full"
-                      style={{ width: '40px', height: '40px', borderRadius: '50%' }}
-                    />
+                    <ProfilePicture />
                   </button>
                   {showProfileMenu && (
                     <div className="profile-menu shadow-sm" style={{
