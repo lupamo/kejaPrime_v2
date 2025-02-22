@@ -99,8 +99,7 @@ const PropertyComments = ({ propertyId }) => {
             setNewComment('');
             await fetchComments();
         } catch (error) {
-            console.error('Error adding comment:', error);
-            setError('Failed to add comment');
+            setError('Please login to comment');
         } finally {
             setLoading(false);
         }
