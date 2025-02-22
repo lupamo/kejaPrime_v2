@@ -1,6 +1,7 @@
 import React, {useState} from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import axios from 'axios'; // Import axios
+import '../styles/SignUp.css';
 // import Validation from '../LoginValidation.jsx';
 
 
@@ -13,6 +14,7 @@ const SignUp = () => {
 	});
 	const [errors, setErrors] = useState({});
 	const [loading, setLoading] = useState(false);
+	const [showPopup, setShowPopup] = useState(false); // State to manage pop-up
 	
 	const navigate =useNavigate(); //hook to navigate to another route
 
@@ -29,13 +31,18 @@ const SignUp = () => {
 				console.log("Submitting form");
 				const response = await axios.post('https://kejaprime-v2.onrender.com/users/register', values); // Post to backend
 				console.log('Signup successful:', response.data);
-				navigate('/sign-in'); // Redirect to sign-in page
+				setShowPopup(true); // Show the pop-up after successful signup
 		} catch (error) {
 				console.error('There was an error registering the user:', error);
 				setErrors({ submit: error.response?.data?.detail || 'Error signing up. Please try again.' });
 		} finally {
 			setLoading(false);
 		}
+	};
+	//close popup and navigate
+	const handlePopUp = () =>{
+		setShowPopup(false);
+		navigate('/sign-in'); //navigate to signin page after closing the popup
 	}
   return (
 	<div className='sign-up-container container mt-5 mb-3 addUser'>
@@ -102,6 +109,18 @@ const SignUp = () => {
 			<p>Already have an account ?</p>
 			<Link to='/Sign-in' type='submit' className='btn btn-success w-50'> Sign In</Link>
 		</div>
+		{/* pop up message */}
+		{showPopup && (
+			<div className='popup-overlay'>
+				<div className='popup'>
+					<h3>Registration Successful!</h3>
+					<p>A verification link has been sent to your email. Please check your inbox to verify your account</p>
+					<button className='btn btn-primary' onClick={handlePopUp}>
+						Ok
+					</button>
+				</div>
+			</div>
+		)}
 	</div>
   )
 }

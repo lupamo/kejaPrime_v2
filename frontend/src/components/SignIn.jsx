@@ -85,6 +85,9 @@ const SignIn = () => {
         <p>Don't have an account ?</p>
         <Link to='/Sign-up' className='btn btn-success w-50'> Sign Up</Link>
       </div>
+      <div className='mt-2'>
+        <Link to='/forgot-password' className='btn btn-link w-50'> Forgot Password?</Link>
+      </div>
     </div>
   );
 };
