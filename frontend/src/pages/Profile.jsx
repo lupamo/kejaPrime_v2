@@ -4,15 +4,22 @@ import '@popperjs/core';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Navbar from '../components/Navbar';
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
+import BookmarkButton from "../components/BookmarkButton";
+import { Trash2 } from 'lucide-react';
 import { AuthContext } from '../utils/AuthContext';
 import defaultProfilePic from '../assets/images/sorry.png'; // Add a default profile picture
-import cameraIcon from '../assets/images/camera.png'; // Add a default profile picture
+import { Camera } from 'lucide-react';
 
 
 const Profile = () => {
-    const { user, token } = useContext(AuthContext);
+    const { user, token, isLoggedIn, setUser } = useContext(AuthContext);
     const [listedHouses, setListedHouses] = useState([]);
+    const [previewUrl, setPreviewUrl] = useState(user?.profile_pic || defaultProfilePic);
+    const [isUploading, setIsUploading] = useState(false);
     const [bookmarkedItems, setBookmarkedItems] = useState([]);
+    const navigate = useNavigate();
+    const [bookmarkedIds, setBookmarkedIds] = useState([]);
     const [activeTab, setActiveTab] = useState('details');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -21,7 +28,7 @@ const Profile = () => {
     const fetchListedHouses = async () => {
         setLoading(true);
         try {
-            const response = await axios.get('http://localhost:8000/properties/me', {
+            const response = await axios.get('https://kejaprime-v2.onrender.com/properties/me', {
                 headers: { Authorization: `Bearer ${token}` },
             });
             console.log('Listed houses response:', response.data);
@@ -34,19 +41,47 @@ const Profile = () => {
         }
     };
 
+     // Fetch user data after profile picture update
+     const fetchUpdatedUserData = async () => {
+        try {
+            const response = await axios.get('https://kejaprime-v2.onrender.com/users/me', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setUser(response.data); // Update the global user state
+        } catch (error) {
+            console.error('Error fetching updated user data:', error);
+            setError('Failed to fetch updated user data');
+        }
+    };
+
+    // Add this useEffect to update preview when user data changes
+    useEffect(() => {
+        if (user?.profile_pic) {
+            setPreviewUrl(user.profile_pic);
+        }
+    }, [user?.profile_pic]);
+
     //fetch bookmarked items from backend
     const fetchBookmarkedItems = async () => {
         setLoading(true);
         try {
-            const response = await axios.get('http://localhost:8000/bookmarks/', {
+            const bookmarksResponse = await axios.get('https://kejaprime-v2.onrender.com/bookmarks/', {
                 headers:  
                 { Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json'
                 },
             });
+
+            // Store bookmark IDs for easy access
+            const bookmarkMap = new Map(
+                bookmarksResponse.data.map(bookmark => [bookmark.property_id, bookmark.id])
+            );
+            setBookmarkedIds(bookmarkMap);
+
+
             //fetching the full details for each bookmarked property
-            const propertyPromises = response.data.map(bookmark => 
-                axios.get(`http://localhost:8000/properties/${bookmark.property_id}`, {
+            const propertyPromises = bookmarksResponse.data.map(bookmark => 
+                axios.get(`https://kejaprime-v2.onrender.com/${bookmark.property_id}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 })
             );
@@ -63,6 +98,40 @@ const Profile = () => {
         }
     };
 
+    // Toggle bookmark function
+    const toggleBookmark = async (propertyId) => {
+        if (!isLoggedIn || !token) {
+            setError("Please login to manage bookmarks");
+            return;
+        }
+
+        try {
+            const config = {
+                headers: { 
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            };
+
+            const bookmarkId = bookmarkedIds.get(propertyId);
+            await axios.delete(
+                `https://kejaprime-v2.onrender.com/${bookmarkId}`,
+                config
+            );
+
+            // Update the bookmarked items list
+            setBookmarkedItems(prev => prev.filter(item => item.id !== propertyId));
+            setBookmarkedIds(prev => {
+                const newMap = new Map(prev);
+                newMap.delete(propertyId);
+                return newMap;
+            });
+
+        } catch (error) {
+            console.error("Error removing bookmark:", error);
+            setError(error.response?.data?.detail || "Failed to remove bookmark");
+        }
+    };
     //Fetch data when the tabs change
 
     useEffect(() => {
@@ -75,30 +144,91 @@ const Profile = () => {
         }
     }, [activeTab, token]);
 
+    //update profile picture preview when user changes profile picture
+    useEffect(() => {
+        setPreviewUrl(user?.profile_pic || defaultProfilePic);
+    }, [user?.profile_pic]);
+
     //Handle profile picture change
-    const handleProfilePictureChange = async (eveny) => {
+    const handleProfilePictureChange = async (event) => {
         const file = event.target.files[0];
-        if (file) {
-            try {
-                const formData = new FormData();
-                formData.append('profile_pic', file);
-                
-                const response = await axios.patch('http://localhost:8000/users/me', formData, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
-                console.log('Profile picture updated:', response.data);
-            } catch (error) {
-                console.error('Error updating profile picture:', error);
-                setError('Failed to update profile picture');
-            }
+        if (!file) {
+            return;
         }
+
+        //create preview URL
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setPreviewUrl(reader.result);
+        };
+        reader.readAsDataURL(file);
+        
+        setIsUploading(true);
+        setError('');
+
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            const response = await axios({
+                method: 'POST',
+                url: 'https://kejaprime-v2.onrender.com/users/avatar',
+                data: formData,
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json',
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            if (response.data?.data?.publicUrl) {
+                const newProfilePicUrl = response.data.data.publicUrl;
+                setPreviewUrl(newProfilePicUrl);
+
+                // Fetch updated user data after profile picture update
+                setUser(prevUser => ({
+                    ...prevUser,
+                    profile_pic: newProfilePicUrl
+                }));
+                
+                await fetchUpdatedUserData();
+
+            }
+        } catch (error) {
+            console.error('Upload error:', error);
+            setError('Failed to update profile picture');
+            setPreviewUrl(user?.profile_pic || defaultProfilePic);
+        } finally {
+            setIsUploading(false);
+        }
+
     };
-    // Trigger file input click
-    const triggerFileInput = () => {
-        document.getElementById('profile-picture-upload').click();
+
+    //handle delete listing
+    const handleDeleteProperty = async (propertyId) => {
+        if (!token) {
+            setError('Please login to delete listings');
+            return;
+        }
+        //confrmation before deletion
+        const isConfirmed = window.confirm("Are you sure you want to delete this listing? This action cannot be undone.");
+    
+        if (!isConfirmed) {
+            return; // If user clicks Cancel, do nothing
+        }
+
+        try {
+            await axios.delete(`https://kejaprime-v2.onrender.com/${propertyId}`, {
+                headers: { 
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            setListedHouses(prev => prev.filter(listing => listing.id !== propertyId));
+        } catch (error) {
+            console.error('Error deleting property:', error);
+            setError(error.response?.data?.detail || 'Failed to delete property');
+        }
     };
 
     return (
@@ -108,26 +238,72 @@ const Profile = () => {
                 {/* Profile Picture and Name Section */}
                 <div className="text-center mb-4">
                     <div className="position-relative d-inline-block">
-                        <img
-                            src={user?.profile_pic || defaultProfilePic}
-                            alt="Profile"
-                            className="rounded-circle"
-                            style={{ width: '150px', height: '150px', objectFit: 'cover' }}
-                        />
-                        {/* <img
-                            src={cameraIcon}
-                            alt="camera upload"
-                            className="position-absolute bottom-0 end-0 rounded-circle"
-                            style={{ cursor: 'pointer', width: '30px', height: '30px' }}
-                            onClick={triggerFileInput}
-                        /> */}
+                        <div 
+                            className='rounded-circle overflow-hidden'
+                            style={{ 
+                                width: '150px', 
+                                height: '150px',
+                                position: 'relative'
+                            }}
+                        >
+                             <img
+                                src={previewUrl}
+                                alt="Profile"
+                                className="w-100 h-100"
+                                style={{ 
+                                    objectFit: 'cover',
+                                }}
+                                onError={(e) => {
+                                    e.target.src = defaultProfilePic;
+                                }}
+                            />
+                            {isUploading && (
+                            <div 
+                                className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center"
+                                style={{ 
+                                    backgroundColor: 'rgba(0, 0, 0, 0.5)'
+                                }}
+                            >
+                                <div className="spinner-border text-white" role="status">
+                                        <span className="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                            )}
+                        </div>
+                        
+                        <label 
+                            htmlFor="profile-picture-upload" 
+                            className="absolute bottom-0 right-0 p-2 bg-white rounded-full shadow-lg cursor-pointer hover:bg-gray-100 transition-colors"
+                            style={{
+                                bottom: '5px',
+                                right: '5px',
+                                backgroundColor: 'white',
+                                borderRadius: '50%',
+                                padding: '8px',
+                                cursor: 'pointer',
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                                transition: 'transform 0.2s',
+                                zIndex: 2
+                            }}
+                            onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                            onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                        >
+                            <Camera size={20} className="text-gray-600" />
+                        </label>
+                        
                         <input
                             type="file"
                             id="profile-picture-upload"
                             onChange={handleProfilePictureChange}
-                            style={{ display: 'none' }}
+                            className="d-none"
                             accept="image/*"
                         />
+                        
+                        {error && (
+                            <div className="alert alert-danger mt-2">
+                                {error}
+                            </div>
+                        )}
                     </div>
                     <h3 className="mt-3">{user?.username || 'User'}</h3>
                     {/* <p className="text-muted">{user?.location || 'No location specified'}</p> */}
@@ -205,7 +381,20 @@ const Profile = () => {
                                                     className="card-img-top"
                                                     style={{ height: '200px', objectFit: 'cover' }}
                                                 />
-                                                <div className="card-body">
+
+                                                {/* ----Delete Button---- */}
+                                                <button
+                                                    onClick={() => handleDeleteProperty(listing.id)}
+                                                    className="btn btn-danger btn-sm position-absolute top-0 end-0 m-2"
+                                                    style={{zIndex: 1}}
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                                <div 
+                                                    className="card-body"
+                                                    onClick={() => navigate(`/listings/${listing.id}`)}
+                                                    style={{ cursor: "pointer"}}
+                                                >
                                                     <h5 className="card-title">{listing.title}</h5>
                                                     <p className="card-text">{listing.location}</p>
                                                     <p className="card-text">Ksh {listing.price}/month</p>
@@ -239,7 +428,17 @@ const Profile = () => {
                                                     className="card-img-top"
                                                     style={{ height: '200px', objectFit: 'cover' }}
                                                 />
-                                                <div className="card-body">
+                                                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                                                    <BookmarkButton
+                                                        isBookmarked={true}
+                                                        onClick={() => toggleBookmark(property.id)}
+                                                    />
+                                                </div>
+                                                <div 
+                                                    className="card-body"
+                                                    onClick={() => navigate(`/listings/${listing.id}`)}
+                                                    style={{ cursor: "pointer"}}
+                                                >
                                                     <h5 className="card-title">{property.title}</h5>
                                                     <p className="card-text">{property.location}</p>
                                                     <p className="card-text">Ksh {property.price}/month</p>

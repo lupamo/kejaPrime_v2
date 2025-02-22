@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
+import defaultProfilePic from '../assets/images/sorry.png';
 import { AuthContext } from '../utils/AuthContext';
-import frown from '../assets/images/sorry.png';
 import './navbar.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Navbar = () => {
-  const { isLoggedIn, logout } = useContext(AuthContext);
+  const { isLoggedIn, logout, user} = useContext(AuthContext);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const navigate = useNavigate();
   const profileMenuRef = useRef(null);
@@ -27,7 +27,38 @@ const Navbar = () => {
     navigate('/sign-in');
     setShowProfileMenu(false);
     logout();
+
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+    if (navbarCollapse.classList.contains('show')) {
+      navbarCollapse.classList.remove('show');
+    }
   };
+
+  // Profile picture component for reusability
+  const ProfilePicture = React.memo(() => (
+    <img
+        src={user?.profile_pic || defaultProfilePic}
+        alt="Profile"
+        className="rounded-full"
+        style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }}
+        onError={(e) => {
+            e.target.src = defaultProfilePic;
+        }}
+    />
+  ));
+
+  const handleNavigation = (path) => {
+    navigate(path);
+    setShowProfileMenu(false);
+
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+    if (navbarCollapse.classList.contains('show')) {
+      navbarCollapse.classList.remove('show');
+    }
+  }
+  useEffect(() => {
+    // This will re-render the ProfilePicture when user data changes
+  }, [user]);
 
   const toggleProfileMenu = () => {
     setShowProfileMenu(!showProfileMenu);
@@ -48,12 +79,7 @@ const Navbar = () => {
                 onClick={toggleProfileMenu}
                 aria-label="Toggle profile menu"
               >
-                <img
-                  src={frown}
-                  alt="Profile"
-                  className="rounded-full"
-                  style={{ width: '40px', height: '40px', borderRadius: '50%' }}
-                />
+               <ProfilePicture />
               </button>
               {showProfileMenu && (
                 <div className="profile-menu shadow-sm" style={{
@@ -70,8 +96,8 @@ const Navbar = () => {
                   <div 
                     className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer"
                     onClick={() => {
-                      navigate('/profile');
-                      setShowProfileMenu(false);
+                      handleNavigation('/profile');
+            
                     }}
                   >
                     Profile
@@ -79,20 +105,11 @@ const Navbar = () => {
                   <div 
                     className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer"
                     onClick={() => {
-                      navigate('/my-listings');
+                      handleNavigation('/my-listings')
                       setShowProfileMenu(false);
                     }}
                   >
                     My Listings
-                  </div>
-                  <div 
-                    className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => {
-                      navigate('/settings');
-                      setShowProfileMenu(false);
-                    }}
-                  >
-                    Settings
                   </div>
                   <div 
                     className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600"
@@ -141,12 +158,7 @@ const Navbar = () => {
                     onClick={toggleProfileMenu}
                     aria-label="Toggle profile menu"
                   >
-                    <img
-                      src={frown}
-                      alt="Profile"
-                      className="rounded-full"
-                      style={{ width: '40px', height: '40px', borderRadius: '50%' }}
-                    />
+                    <ProfilePicture />
                   </button>
                   {showProfileMenu && (
                     <div className="profile-menu shadow-sm" style={{
@@ -162,30 +174,9 @@ const Navbar = () => {
                     }}>
                       <div 
                         className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => {
-                          navigate('/profile');
-                          setShowProfileMenu(false);
-                        }}
+                        onClick={() => handleNavigation('/profile')}
                       >
                         Profile
-                      </div>
-                      <div 
-                        className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => {
-                          navigate('/my-listings');
-                          setShowProfileMenu(false);
-                        }}
-                      >
-                        My Listings
-                      </div>
-                      <div 
-                        className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => {
-                          navigate('/settings');
-                          setShowProfileMenu(false);
-                        }}
-                      >
-                        Settings
                       </div>
                       <div 
                         className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600"
@@ -208,14 +199,14 @@ const Navbar = () => {
               <>
                 <button
                   className="btn-login rounded px-3 py-1 m-2"
-                  onClick={() => navigate('/sign-in')}
+                  onClick={() => handleNavigation('/sign-up')}
                   aria-label="Login"
                 >
                   Login
                 </button>
                 <button
                   className="btn-login rounded px-3 py-1 m-2"
-                  onClick={() => navigate('/sign-up')}
+                  onClick={() => handleNavigation('/sign-up')}
                   aria-label="Sign Up"
                 >
                   Sign Up

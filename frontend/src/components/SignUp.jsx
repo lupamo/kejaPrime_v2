@@ -29,7 +29,7 @@ const SignUp = () => {
 		setErrors({});
 		try {
 				console.log("Submitting form");
-				const response = await axios.post('http://localhost:8000/users/register', values); // Post to backend
+				const response = await axios.post('https://kejaprime-v2.onrender.com/users/register', values); // Post to backend
 				console.log('Signup successful:', response.data);
 				setShowPopup(true); // Show the pop-up after successful signup
 		} catch (error) {

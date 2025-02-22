@@ -72,7 +72,7 @@ function CreateListing() {
             };
     
             const propertyResponse = await axios.post(
-                'http://localhost:8000/properties/add',
+                'https://kejaprime-v2.onrender.com/properties/add',
                 propertyPayload,
                 {
                     headers: {
@@ -94,7 +94,7 @@ function CreateListing() {
             });
     
             await axios.post(
-                `http://localhost:8000/properties/upload?property_id=${propertyId}`,
+                `https://kejaprime-v2.onrender.com/upload?property_id=${propertyId}`,
                 imagePayload,
                 {
                     headers: {

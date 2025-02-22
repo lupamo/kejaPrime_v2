@@ -28,6 +28,7 @@ def add_comment(
     
     new_comment = models.Comment(
         user_id=user.id,
+        username=user.username,
         property_id=property_id,
         content=content# Comment changes----------------------------
     )
@@ -91,7 +92,8 @@ def post_reply(
     reply = models.Reply(
         comment_id=comment_id,
         content=content,
-        user_id=user.id
+        user_id=user.id,
+        username=user.username
     )
     db.add(reply)
     db.commit()
@@ -121,6 +123,7 @@ def all_replies(
     if not replies:
         raise HTTPErros.not_found("no replies found")
     
+    # Format response to include user data
     return replies
 
 

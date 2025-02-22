@@ -4,8 +4,6 @@ import axios from "axios";
 import defaultProfilePic from '../assets/images/sorry.png';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
-
-
 const PropertyComments = ({ propertyId }) => {
     const { user, token } = useContext(AuthContext);
     const [comments, setComments] = useState([]);
@@ -17,10 +15,11 @@ const PropertyComments = ({ propertyId }) => {
     const [expandedComments, setExpandedComments] = useState({});
     const [replyingTo, setReplyingTo] = useState(null);
 
+    console.log(user);
     // Fetch comments
     const fetchComments = async () => {
         try {
-            const response = await axios.get(`http://localhost:8000/comments/`, {
+            const response = await axios.get(`https://kejaprime-v2.onrender.com/comments/`, {
                 headers: { Authorization: `Bearer ${token}` },
                 params: { property_id: propertyId }
             });
@@ -39,7 +38,7 @@ const PropertyComments = ({ propertyId }) => {
     // Fetch replies for a specific comment
     const fetchReplies = async (commentId) => {
         try {
-            const response = await axios.get(`http://localhost:8000/comments/replies`, {
+            const response = await axios.get(`https://kejaprime-v2.onrender.com/comments/replies`, {
                 headers: { Authorization: `Bearer ${token}` },
                 params: { comment_id: commentId }
             });
@@ -50,7 +49,7 @@ const PropertyComments = ({ propertyId }) => {
             if (response.data.length > 0) {
                 setExpandedComments(prev => ({
                     ...prev,
-                    [commentId]: true // Set to true to show replies by default, or false to hide them
+                    [commentId]: true
                 }));
             }
         } catch (error) {
@@ -66,14 +65,13 @@ const PropertyComments = ({ propertyId }) => {
         }
     }, [propertyId]);
 
-    // Expanded comments state
     const toggleReplies = (commentId) => {
         setExpandedComments(prev => ({
             ...prev,
             [commentId]: !prev[commentId]
         }));
     };
-    // Check if replies are expanded
+
     const getReplyCount = (commentId) => {
         return replies[commentId]?.length || 0;
     };
@@ -87,7 +85,7 @@ const PropertyComments = ({ propertyId }) => {
         setError('');
 
         try {
-            await axios.post('http://localhost:8000/comments/add', null, {
+            await axios.post('https://kejaprime-v2.onrender.com/comments/add', null, {
                 headers: { 
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -101,8 +99,7 @@ const PropertyComments = ({ propertyId }) => {
             setNewComment('');
             await fetchComments();
         } catch (error) {
-            console.error('Error adding comment:', error);
-            setError('Failed to add comment');
+            setError('Please login to comment');
         } finally {
             setLoading(false);
         }
@@ -116,7 +113,7 @@ const PropertyComments = ({ propertyId }) => {
         setError('');
 
         try {
-            await axios.post('http://localhost:8000/comments/reply', null, {
+            await axios.post('https://kejaprime-v2.onrender.com/comments/reply', null, {
                 headers: { 
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -141,7 +138,7 @@ const PropertyComments = ({ propertyId }) => {
     // Delete comment
     const handleDeleteComment = async (commentId) => {
         try {
-            await axios.delete(`http://localhost:8000/comments/delete/${commentId}`, {
+            await axios.delete(`https://kejaprime-v2.onrender.com/comments/delete/${commentId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             await fetchComments();
@@ -154,7 +151,7 @@ const PropertyComments = ({ propertyId }) => {
     // Delete reply
     const handleDeleteReply = async (replyId, commentId) => {
         try {
-            await axios.delete(`http://localhost:8000/comments/reply/${replyId}`, {
+            await axios.delete(`https://kejaprime-v2.onrender.com/comments/reply/${replyId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             await fetchReplies(commentId);
@@ -177,8 +174,8 @@ const PropertyComments = ({ propertyId }) => {
                         className="rounded-circle"
                         style={{ width: '40px', height: '40px', objectFit: 'cover' }}
                     />
-                    <p className="mt-3">{user?.username || 'User'}</p>
                     <div className="flex-grow-1">
+                        <p className="mb-2">{user?.username || 'Anonymous'}</p>
                         <textarea
                             className="form-control"
                             value={newComment}
@@ -206,7 +203,7 @@ const PropertyComments = ({ propertyId }) => {
                     <div key={comment.id} className="comment-item mb-4">
                         <div className="d-flex gap-3">
                             <img 
-                                src={comment.user?.profile_pic || defaultProfilePic} 
+                                src={comment.profile_pic || defaultProfilePic} 
                                 alt="Profile" 
                                 className="rounded-circle"
                                 style={{ width: '40px', height: '40px', objectFit: 'cover' }}
@@ -214,7 +211,7 @@ const PropertyComments = ({ propertyId }) => {
                             <div className="flex-grow-1">
                                 <div className="comment-content p-3 bg-light rounded">
                                     <div className="d-flex justify-content-between align-items-center mb-2">
-                                        <strong>{comment.user?.username}</strong>
+                                        <strong>{comment.username || 'Anonymous'}</strong>
                                         <small className="text-muted">
                                             {new Date(comment.created_at).toLocaleDateString()}
                                         </small>
@@ -258,16 +255,15 @@ const PropertyComments = ({ propertyId }) => {
                                             <div key={reply.id} className="reply-item mb-2">
                                                 <div className="d-flex gap-3">
                                                     <img 
-                                                        src={reply.user?.profile_pic || defaultProfilePic} 
+                                                        src={reply.profile_pic || defaultProfilePic} 
                                                         alt="Profile" 
                                                         className="rounded-circle"
                                                         style={{ width: '30px', height: '30px', objectFit: 'cover' }}
                                                     />
-                                                    <p className="mt-3">{user?.username || 'User'}</p>
                                                     <div className="flex-grow-1">
                                                         <div className="reply-content p-2 bg-light rounded">
                                                             <div className="d-flex justify-content-between align-items-center mb-1">
-                                                                <strong className="small">{reply.user?.username}</strong>
+                                                                <strong className="small">{reply.username || 'Anonymous'}</strong>
                                                                 <small className="text-muted">
                                                                     {new Date(reply.created_at).toLocaleDateString()}
                                                                 </small>
@@ -292,15 +288,15 @@ const PropertyComments = ({ propertyId }) => {
                                 {/* Reply Form */}
                                 {replyingTo === comment.id && (
                                     <div className="reply-form ms-4 mt-2">
-                                        <div className="d-flex gap-2">
+                                        <div className="d-flex gap-3">
                                             <img 
                                                 src={user?.profile_pic || defaultProfilePic} 
                                                 alt="Profile" 
                                                 className="rounded-circle"
                                                 style={{ width: '30px', height: '30px', objectFit: 'cover' }}
                                             />
-                                            <p className="mt-3">{user?.userName || 'user'}</p>
                                             <div className="flex-grow-1">
+                                                <p className="mb-2">{user?.username || 'Anonymous'}</p>
                                                 <textarea
                                                     className="form-control form-control-sm"
                                                     value={newReply[comment.id] || ''}
