@@ -27,6 +27,11 @@ const Navbar = () => {
     navigate('/sign-in');
     setShowProfileMenu(false);
     logout();
+
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+    if (navbarCollapse.classList.contains('show')) {
+      navbarCollapse.classList.remove('show');
+    }
   };
 
   // Profile picture component for reusability
@@ -41,6 +46,16 @@ const Navbar = () => {
         }}
     />
   ));
+
+  const handleNavigation = (path) => {
+    navigate(path);
+    setShowProfileMenu(false);
+
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+    if (navbarCollapse.classList.contains('show')) {
+      navbarCollapse.classList.remove('show');
+    }
+  }
   useEffect(() => {
     // This will re-render the ProfilePicture when user data changes
   }, [user]);
@@ -81,8 +96,8 @@ const Navbar = () => {
                   <div 
                     className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer"
                     onClick={() => {
-                      navigate('/profile');
-                      setShowProfileMenu(false);
+                      handleNavigation('/profile');
+            
                     }}
                   >
                     Profile
@@ -90,7 +105,7 @@ const Navbar = () => {
                   <div 
                     className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer"
                     onClick={() => {
-                      navigate('/my-listings');
+                      handleNavigation('/my-listings')
                       setShowProfileMenu(false);
                     }}
                   >
@@ -159,10 +174,7 @@ const Navbar = () => {
                     }}>
                       <div 
                         className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => {
-                          navigate('/profile');
-                          setShowProfileMenu(false);
-                        }}
+                        onClick={() => handleNavigation('/profile')}
                       >
                         Profile
                       </div>
@@ -187,14 +199,14 @@ const Navbar = () => {
               <>
                 <button
                   className="btn-login rounded px-3 py-1 m-2"
-                  onClick={() => navigate('/sign-in')}
+                  onClick={() => handleNavigation('/sign-up')}
                   aria-label="Login"
                 >
                   Login
                 </button>
                 <button
                   className="btn-login rounded px-3 py-1 m-2"
-                  onClick={() => navigate('/sign-up')}
+                  onClick={() => handleNavigation('/sign-up')}
                   aria-label="Sign Up"
                 >
                   Sign Up
