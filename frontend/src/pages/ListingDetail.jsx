@@ -26,7 +26,7 @@ const ListingDetail = () => {
         const fetchListing = async () => {
             try {
                 console.log(`Fetching listing with ID: ${id}`);
-                const response = await axios.get(`http://localhost:8000/properties/${id}`);
+                const response = await axios.get(`https://kejaprime-v2.onrender.com/${id}`);
                 console.log('Full response:', response);
                 setListing(response.data);
             } catch (error) {

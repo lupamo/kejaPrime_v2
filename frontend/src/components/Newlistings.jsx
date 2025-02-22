@@ -16,7 +16,7 @@ const Newistings = () => {
     useEffect(() => {
         const fetchRecentListings = async () => {
             try {
-                const response = await axios.get("http://localhost:8000/properties/", {
+                const response = await axios.get("https://kejaprime-v2.onrender.com/properties/", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 if (response.status === 200) {
@@ -39,7 +39,7 @@ const Newistings = () => {
             if (!token) return;
 
             try {
-                const response = await axios.get('http://localhost:8000/bookmarks/', {
+                const response = await axios.get('https://kejaprime-v2.onrender.com/bookmarks/', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 if (response.status === 200) {
@@ -70,21 +70,21 @@ const Newistings = () => {
 
             if (bookmarkedListings.includes(listingId)) {
                 const bookmarksResponse = await axios.get(
-                    'http://localhost:8000/bookmarks/',
+                    'https://kejaprime-v2.onrender.com/bookmarks/',
                     config
                 );
                 const bookmark = bookmarksResponse.data.find(b => b.property_id === listingId);
                 
                 if (bookmark) {
                     await axios.delete(
-                        `http://localhost:8000/bookmarks/delete/${bookmark.id}`,
+                        `https://kejaprime-v2.onrender.com/bookmarks/delete/${bookmark.id}`,
                         config
                     );
                     setBookmarkedListings(prev => prev.filter(id => id !== listingId));
                 }
             } else {
                 const response = await axios.post(
-                    'http://localhost:8000/bookmarks/add',
+                    'https://kejaprime-v2.onrender.com/bookmarks/add',
                     {},
                     {
                         ...config,

@@ -23,7 +23,7 @@ const SignIn = () => {
     setErrors({});
 
       try {
-        const response = await axios.post('http://localhost:8000/users/login',
+        const response = await axios.post('https://kejaprime-v2.onrender.com/users/login',
           { email: values.email, password: values.password },
           { headers: { 'Content-Type': 'application/json' } }
         );
