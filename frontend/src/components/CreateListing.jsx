@@ -94,7 +94,8 @@ function CreateListing() {
             });
     
             await axios.post(
-                `https://kejaprime-v2.onrender.com/upload?property_id=${propertyId}`,
+
+                `https://kejaprime-v2.onrender.com/properties/upload?property_id=${propertyId}`,
                 imagePayload,
                 {
                     headers: {
