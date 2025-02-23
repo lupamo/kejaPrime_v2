@@ -31,6 +31,11 @@ const Navbar = () => {
     setShowProfileMenu(false);
     setIsNavCollapsed(true);
     logout();
+
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+    if (navbarCollapse.classList.contains('show')) {
+      navbarCollapse.classList.remove('show');
+    }
   };
   
   const toggleProfileMenu = (e) => {
@@ -49,8 +54,8 @@ const Navbar = () => {
         e.target.src = defaultProfilePic;
       }}
     />
-  ));
-  
+  ));  
+
 
   const handleNavigation = (e, path) => {
     e.preventDefault();
@@ -93,13 +98,19 @@ const Navbar = () => {
                 }}>
                   <div
                     className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={(e) => handleNavigation(e, '/profile')}
+                    onClick={() => {
+                      handleNavigation('/profile');
+            
+                    }}
                   >
                     Profile
                   </div>
                   <div
                     className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={(e) => handleNavigation(e, '/my-listings')}
+                    onClick={() => {
+                      handleNavigation('/my-listings')
+                      setShowProfileMenu(false);
+                    }}
                   >
                     My Listings
                   </div>
@@ -163,12 +174,9 @@ const Navbar = () => {
                       minWidth: '200px',
                       border: '1px solid rgba(0,0,0,0.1)'
                     }}>
-                      <button
-                        className="w-100 text-start px-4 py-2 hover:bg-gray-100 border-0 bg-transparent"
-                        onClick={(e) => {
-                          e.stopPropagation(); // Stop event propagation
-                          handleNavigation('/profile');
-                        }}
+                      <div 
+                        className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                        onClick={() => handleNavigation('/profile')}
                       >
                         Profile
                       </button>
@@ -194,22 +202,20 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                <div className="hambugur">
-                  <button
-                    className="btn-login rounded px-3 py-1 m-2"
-                    onClick={(e) => handleNavigation(e, '/sign-in')}
-                    aria-label="Login"
-                  >
-                    Login
-                  </button>
-                  <button
-                    className="btn-login rounded px-3 py-1 m-2"
-                    onClick={(e) => handleNavigation(e, '/sign-up')}
-                    aria-label="Sign Up"
-                  >
-                    Sign Up
-                  </button>
-                </div>
+                <button
+                  className="btn-login rounded px-3 py-1 m-2"
+                  onClick={() => handleNavigation('/sign-up')}
+                  aria-label="Login"
+                >
+                  Login
+                </button>
+                <button
+                  className="btn-login rounded px-3 py-1 m-2"
+                  onClick={() => handleNavigation('/sign-up')}
+                  aria-label="Sign Up"
+                >
+                  Sign Up
+                </button>
               </>
             )}
           </div>

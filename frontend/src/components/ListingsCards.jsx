@@ -21,7 +21,7 @@ const ListingsCards = () => {
     useEffect(() => {
         const fetchListings = async () => {
             try {
-                const response = await axios.get("http://localhost:8000/properties/", {
+                const response = await axios.get("https://kejaprime-v2.onrender.com/properties/", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 if (response.status === 200) {
@@ -42,7 +42,7 @@ const ListingsCards = () => {
             if (!token) return;
 
             try {
-                const response = await axios.get('http://localhost:8000/bookmarks/', {
+                const response = await axios.get('https://kejaprime-v2.onrender.com/bookmarks/', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 if (response.status === 200) {
@@ -74,21 +74,21 @@ const ListingsCards = () => {
 
             if (bookmarkedListings.includes(listingId)) {
                 const bookmarksResponse = await axios.get(
-                    'http://localhost:8000/bookmarks/',
+                    'https://kejaprime-v2.onrender.com/bookmarks/',
                     config
                 );
                 const bookmark = bookmarksResponse.data.find(b => b.property_id === listingId);
                 
                 if (bookmark) {
                     await axios.delete(
-                        `http://localhost:8000/bookmarks/delete/${bookmark.id}`,
+                        `https://kejaprime-v2.onrender.com/bookmarks/delete/${bookmark.id}`,
                         config
                     );
                     setBookmarkedListings(prev => prev.filter(id => id !== listingId));
                 }
             } else {
                 const response = await axios.post(
-                    'http://localhost:8000/bookmarks/add',
+                    'https://kejaprime-v2.onrender.com/bookmarks/add',
                     {},
                     {
                         ...config,
@@ -166,7 +166,7 @@ const ListingsCards = () => {
                                     <div
                                         className="card-body"
                                         onClick={() => navigate(`/listings/${listing.id}`)}
-                                        style={{ padding: "12px" }}
+                                        style={{ padding: "12px", cursor: "pointer"}}
                                     >
                                         <h4 style={{ marginBottom: "10px", color: "#203856" }}>
                                             {listing.title}

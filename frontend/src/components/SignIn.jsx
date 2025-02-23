@@ -23,7 +23,7 @@ const SignIn = () => {
     setErrors({});
 
       try {
-        const response = await axios.post('http://localhost:8000/users/login',
+        const response = await axios.post('https://kejaprime-v2.onrender.com/users/login',
           { email: values.email, password: values.password },
           { headers: { 'Content-Type': 'application/json' } }
         );
@@ -84,6 +84,9 @@ const SignIn = () => {
       <div className='login mt-3'>
         <p>Don't have an account ?</p>
         <Link to='/Sign-up' className='btn btn-success w-50'> Sign Up</Link>
+      </div>
+      <div className='mt-2'>
+        <Link to='/forgot-password' className='btn btn-link w-50'> Forgot Password?</Link>
       </div>
     </div>
   );

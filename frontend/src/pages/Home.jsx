@@ -17,7 +17,7 @@ const Home = () => {
     useEffect(() => {
         const fetchListings = async () => {
             try {
-                const response = await axios.get('http://localhost:8000/properties/', {
+                const response = await axios.get('https://kejaprime-v2.onrender.com/properties/', {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 if (response.status === 200) {
