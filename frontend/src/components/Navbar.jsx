@@ -7,8 +7,9 @@ import './navbar.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Navbar = () => {
-  const { isLoggedIn, logout, user} = useContext(AuthContext);
+  const { isLoggedIn, logout, user } = useContext(AuthContext);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [isNavCollapsed, setIsNavCollapsed] = useState(true);
   const navigate = useNavigate();
   const profileMenuRef = useRef(null);
 
@@ -23,30 +24,40 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     navigate('/sign-in');
     setShowProfileMenu(false);
+    setIsNavCollapsed(true);
     logout();
   };
-
+  
+  const toggleProfileMenu = (e) => {
+    e.stopPropagation();
+    e.stopPropagation();
+    setShowProfileMenu(!showProfileMenu);
+  };
   // Profile picture component for reusability
   const ProfilePicture = React.memo(() => (
     <img
-        src={user?.profile_pic || defaultProfilePic}
-        alt="Profile"
-        className="rounded-full"
-        style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }}
-        onError={(e) => {
-            e.target.src = defaultProfilePic;
-        }}
+      src={user?.profile_pic || defaultProfilePic}
+      alt="Profile"
+      className="rounded-full"
+      style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }}
+      onError={(e) => {
+        e.target.src = defaultProfilePic;
+      }}
     />
   ));
-  useEffect(() => {
-    // This will re-render the ProfilePicture when user data changes
-  }, [user]);
+  
 
-  const toggleProfileMenu = () => {
-    setShowProfileMenu(!showProfileMenu);
+  const handleNavigation = (e, path) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigate(path);
+    setShowProfileMenu(false);
+    setIsNavCollapsed(true)
   };
 
   return (
@@ -64,7 +75,7 @@ const Navbar = () => {
                 onClick={toggleProfileMenu}
                 aria-label="Toggle profile menu"
               >
-               <ProfilePicture />
+                <ProfilePicture />
               </button>
               {showProfileMenu && (
                 <div className="profile-menu shadow-sm" style={{
@@ -76,27 +87,23 @@ const Navbar = () => {
                   borderRadius: '8px',
                   padding: '0.5rem 0',
                   minWidth: '200px',
-                  border: '1px solid rgba(0,0,0,0.1)'
+                  border: '1px solid rgba(0,0,0,0.1)',
+                  maxHeight: 'calc(100vh - 100px)',
+                  overflowY: 'auto'
                 }}>
-                  <div 
+                  <div
                     className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => {
-                      navigate('/profile');
-                      setShowProfileMenu(false);
-                    }}
+                    onClick={(e) => handleNavigation(e, '/profile')}
                   >
                     Profile
                   </div>
-                  <div 
+                  <div
                     className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => {
-                      navigate('/my-listings');
-                      setShowProfileMenu(false);
-                    }}
+                    onClick={(e) => handleNavigation(e, '/my-listings')}
                   >
                     My Listings
                   </div>
-                  <div 
+                  <div
                     className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600"
                     onClick={handleLogout}
                   >
@@ -109,27 +116,26 @@ const Navbar = () => {
           <button
             className="navbar-toggler"
             type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarSupportedContent"
+            onClick={() => setIsNavCollapsed(!isNavCollapsed)}
             aria-controls="navbarSupportedContent"
-            aria-expanded="false"
+            aria-expanded={!isNavCollapsed}
             aria-label="Toggle navigation"
           >
             <span className="navbar-toggler-icon"></span>
           </button>
         </div>
-        
+
         {/* Main Navigation Content */}
-        <div className="collapse navbar-collapse" id="navbarSupportedContent">
+        <div className={`${isNavCollapsed ? 'collapse' : ''} navbar-collapse`} id="navbarSupportedContent">
           <ul className="navbar-nav mx-auto mb-2 mb-lg-0 align-items-center">
             <li className="nav-item">
-              <Link className="nav-link active" aria-current="page" to="/">Home</Link>
+              <Link className="nav-link active" aria-current="page" to="/" onClick={() => setIsNavCollapsed(true)}>Home</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/listings">Listings</Link>
+              <Link className="nav-link" to="/listings" onClick={() => setIsNavCollapsed(true)}>Listings</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/about-us">About Us</Link>
+              <Link className="nav-link" to="/about-us" onClick={() => setIsNavCollapsed(true)}>About Us</Link>
             </li>
           </ul>
 
@@ -157,21 +163,24 @@ const Navbar = () => {
                       minWidth: '200px',
                       border: '1px solid rgba(0,0,0,0.1)'
                     }}>
-                      <div 
-                        className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => {
-                          navigate('/profile');
-                          setShowProfileMenu(false);
+                      <button
+                        className="w-100 text-start px-4 py-2 hover:bg-gray-100 border-0 bg-transparent"
+                        onClick={(e) => {
+                          e.stopPropagation(); // Stop event propagation
+                          handleNavigation('/profile');
                         }}
                       >
                         Profile
-                      </div>
-                      <div 
-                        className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600"
-                        onClick={handleLogout}
+                      </button>
+                      <button
+                        className="w-100 text-start px-4 py-2 hover:bg-gray-100 border-0 bg-transparent text-red-600"
+                        onClick={(e) => {
+                          e.stopPropagation(); // Stop event propagation
+                          handleLogout();
+                        }}
                       >
                         Logout
-                      </div>
+                      </button>
                     </div>
                   )}
                 </div>
@@ -180,25 +189,27 @@ const Navbar = () => {
                   onClick={() => navigate('/createListing')}
                   aria-label="Create Listing"
                 >
-                  Create Listing
+                  Create a Listing
                 </button>
               </>
             ) : (
               <>
-                <button
-                  className="btn-login rounded px-3 py-1 m-2"
-                  onClick={() => navigate('/sign-in')}
-                  aria-label="Login"
-                >
-                  Login
-                </button>
-                <button
-                  className="btn-login rounded px-3 py-1 m-2"
-                  onClick={() => navigate('/sign-up')}
-                  aria-label="Sign Up"
-                >
-                  Sign Up
-                </button>
+                <div className="hambugur">
+                  <button
+                    className="btn-login rounded px-3 py-1 m-2"
+                    onClick={(e) => handleNavigation(e, '/sign-in')}
+                    aria-label="Login"
+                  >
+                    Login
+                  </button>
+                  <button
+                    className="btn-login rounded px-3 py-1 m-2"
+                    onClick={(e) => handleNavigation(e, '/sign-up')}
+                    aria-label="Sign Up"
+                  >
+                    Sign Up
+                  </button>
+                </div>
               </>
             )}
           </div>
