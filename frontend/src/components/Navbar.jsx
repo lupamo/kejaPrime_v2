@@ -174,7 +174,7 @@ const Navbar = () => {
                       minWidth: '200px',
                       border: '1px solid rgba(0,0,0,0.1)'
                     }}>
-                      <div 
+                      <button
                         className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer"
                         onClick={() => handleNavigation('/profile')}
                       >
@@ -204,7 +204,7 @@ const Navbar = () => {
               <>
                 <button
                   className="btn-login rounded px-3 py-1 m-2"
-                  onClick={() => handleNavigation('/sign-up')}
+                  onClick={() => handleNavigation('/sign-in')}
                   aria-label="Login"
                 >
                   Login
