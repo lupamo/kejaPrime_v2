@@ -25,8 +25,8 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+    // e.preventDefault();
+    // e.stopPropagation();
     navigate('/sign-in');
     setShowProfileMenu(false);
     setIsNavCollapsed(true);
@@ -39,8 +39,7 @@ const Navbar = () => {
   };
   
   const toggleProfileMenu = (e) => {
-    e.stopPropagation();
-    e.stopPropagation();
+    // e.stopPropagation();
     setShowProfileMenu(!showProfileMenu);
   };
   // Profile picture component for reusability
@@ -58,8 +57,8 @@ const Navbar = () => {
 
 
   const handleNavigation = (e, path) => {
-    e.preventDefault();
-    e.stopPropagation();
+    // e.preventDefault();
+    // e.stopPropagation();
     navigate(path);
     setShowProfileMenu(false);
     setIsNavCollapsed(true)
@@ -183,7 +182,7 @@ const Navbar = () => {
                       <button
                         className="w-100 text-start px-4 py-2 hover:bg-gray-100 border-0 bg-transparent text-red-600"
                         onClick={(e) => {
-                          e.stopPropagation(); // Stop event propagation
+                          // e.stopPropagation(); // Stop event propagation
                           handleLogout();
                         }}
                       >
@@ -204,14 +203,14 @@ const Navbar = () => {
               <>
                 <button
                   className="btn-login rounded px-3 py-1 m-2"
-                  onClick={() => handleNavigation('/sign-in')}
+                  onClick={(e) => handleNavigation(e, '/sign-in')}
                   aria-label="Login"
                 >
                   Login
                 </button>
                 <button
                   className="btn-login rounded px-3 py-1 m-2"
-                  onClick={() => handleNavigation('/sign-up')}
+                  onClick={(e) => handleNavigation(e, '/sign-up')}
                   aria-label="Sign Up"
                 >
                   Sign Up
