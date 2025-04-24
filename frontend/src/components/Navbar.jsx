@@ -97,8 +97,8 @@ const Navbar = () => {
                 }}>
                   <div
                     className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                    onClick={() => {
-                      handleNavigation('/profile');
+                    onClick={(e) => {
+                      handleNavigation(e, '/profile');
             
                     }}
                   >
@@ -175,7 +175,7 @@ const Navbar = () => {
                     }}>
                       <button
                         className="profile-menu-item px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                        onClick={() => handleNavigation('/profile')}
+                        onClick={(e) => handleNavigation(e, '/profile')}
                       >
                         Profile
                       </button>
