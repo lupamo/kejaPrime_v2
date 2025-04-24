@@ -21,7 +21,7 @@ const Newistings = () => {
                 });
                 if (response.status === 200) {
                     // Get the last 4 listings
-                    const lastFourListings = response.data.slice(-4);
+                    const lastFourListings = response.data.slice(-3);
                     setRecentListings(lastFourListings);
                 }
             } catch (error) {
@@ -115,15 +115,15 @@ const Newistings = () => {
             <div className="row">
                 {recentListings.length > 0 ? (
                     recentListings.map((listing) => (
-                        <div className="carding col-xl-3" key={listing.id} style={{ marginBottom: "10px" }}>
-                            <div className="listing-card shadow-sm">
+                        <div className="carding col-xl-4" key={listing.id} style={{ marginBottom: "10px" }}>
+                            <div className="listing-card shadow-lg rounded-3 position-relative">
                                 <img
                                     src={listing.image_urls || "https://via.placeholder.com/300"}
                                     alt={listing.title}
                                     className="card-img-top"
-                                    style={{ position: "relative", height: "200px", objectFit: "cover" }}
+                                    style={{ position: "relative", borderRadius: "1rem", height: "250px", objectFit: "cover" }}
                                 />
-                                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                                <div className="position-absolute" style={{ top: "15px", right: "15px" }}>
                                     <BookmarkButton
                                         isBookmarked={bookmarkedListings.includes(listing.id)}
                                         onClick={() => toggleBookmark(listing.id)}
@@ -131,13 +131,15 @@ const Newistings = () => {
                                 </div>
                                 <div
                                     className="card-body"
-                                    onClick={() => navigate(`/listings/${listing.id}`)}
-                                    style={{ padding: "12px" }}
+                                    style={{ padding: "10px" }}
                                 >
                                     <h4 style={{ marginBottom: "10px", color: "#203856" }}>
                                         {listing.title}
                                     </h4>
-                                    <p className="d-flex align-items-center">
+                                    <h5 style={{ fontWeight:"620", color: "#203856" }}>
+                                            {listing.name}
+                                    </h5>
+                                    <p className="d-flex align-items-center" style={{ fontWeight:"450"}}>
                                         <img
                                             src={location_icon}
                                             alt="Location Icon"
@@ -146,7 +148,12 @@ const Newistings = () => {
                                         />
                                         {listing.location}
                                     </p>
-                                    <h5 style={{ color: "#203856" }}>Ksh {listing.price}/month</h5>
+                                    <div className="d-flex justify-content-between align-items-center">
+                                            <h5 style={{ color: "#203856"}}>Ksh {listing.price}/month</h5>
+                                            <button className="detail-button" style={{width: "100px", height:"38px", borderRadius: "5px", display:"flex", justifyContent:"center", alignItems:"center", border: "1px solid #fd8a20", color:"#272724", fontSize: "15px", fontWeight:"450", cursor: "pointer" }} onClick={() => navigate(`/listings/${listing.id}`)}>
+                                                   View Details
+                                            </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

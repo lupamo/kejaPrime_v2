@@ -3,3 +3,9 @@
 	justify-content: space-between;
 	margin: 20px 30px;
 }
+
+.detail-button:hover{
+	background-color: #fd8a20;
+	color: #ffffff;
+	cursor: pointer;
+}
