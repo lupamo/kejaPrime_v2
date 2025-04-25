@@ -150,7 +150,7 @@ const Newistings = () => {
                                     </p>
                                     <div className="d-flex justify-content-between align-items-center">
                                             <h5 style={{ color: "#203856"}}>Ksh {listing.price}/month</h5>
-                                            <button className="detail-button" style={{width: "100px", height:"38px", borderRadius: "5px", display:"flex", justifyContent:"center", alignItems:"center", border: "1px solid #fd8a20", color:"#272724", fontSize: "15px", fontWeight:"450", cursor: "pointer" }} onClick={() => navigate(`/listings/${listing.id}`)}>
+                                            <button className="detailButton" style={{width: "100px", height:"38px", borderRadius: "5px", display:"flex", justifyContent:"center", alignItems:"center", border: "1px solid #ff9d41", background: "#fd8a20", color:"#ffffff", fontSize: "15px", fontWeight:"450", cursor: "pointer" }} onClick={() => navigate(`/listings/${listing.id}`)}>
                                                    View Details
                                             </button>
                                     </div>
