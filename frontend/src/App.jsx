@@ -12,6 +12,7 @@ import SignUp from './components/SignUp';
 import CreateListing from './components/CreateListing';
 import AboutUs from './pages/AboutUs';
 import ForgotPassword from './components/ForgotPassword';
+import ResetPassword from './components/ResetPassword';
 
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/about-us" element={<AboutUs />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path='/reset-password' element={<ResetPassword />} />
       </Routes>
   </BrowserRouter>
   </AuthProvider>

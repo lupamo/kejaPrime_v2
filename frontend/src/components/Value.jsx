@@ -19,22 +19,23 @@ const Value = () => {
                 {/*Accordion part 1*/}
                 <div className='col-lg-6'>
                     <div>
-                        <p>
-                        At KejaPrime, we take pride in providing unmatched value to our clients. <br /> Renting a home should be more than just finding a place to live—it’s about peace of mind, convenience, and long-term satisfaction. 
+                        <p className='lead'>
+                        At KejaPrime, we are revolutionizing the rental experience by bridging the gap between renters and landlords. <br /> 
+                        Whether you're searching for your next home or listing your property, we provide a trusted and transparent platform that puts people first.
                         </p>
                     </div>
                     <div className='accordion mt-5 ' id='valuesAccordion'>
                         <div className='accordion-item'>
                             <h2 className='accordion-header' id='heading-1'>
-                                <button className='accordion-button' type='button' data-bs-toggle='collapse'
+                                <button className='accordion-button fw-bold' type='button' data-bs-toggle='collapse'
                                 data-bs-target='#value-1' aria-expanded='true'
-                                aria-controls='value-1'> Lifetime Warranty</button>
+                                aria-controls='value-1'> Verified Listings</button>
                             </h2>
                             <div id='value-1' className='accordion-collapse collapse show'
                             aria-labelledby='heading-1' data-bs-parent='#valuesAccordion'>
                                 <div className='accordion-body'>
                                     <p>
-                                        We offer a lifetime warranty on all our rented properties through our platform. <br /> This ensures you always have peace of mind when renting with us.
+                                    All listings on KejaPrime are carefully verified to ensure accuracy and legitimacy, helping renters avoid scams and landlords connect with serious clients.
                                     </p>
                                 </div>
                             </div>
@@ -44,13 +45,13 @@ const Value = () => {
                             <h2 className='accordion-header' id='heading-2'>
                                 <button className='accordion-button collapsed' type='button' data-bs-toggle='collapse'
                                 data-bs-target='#value-2' aria-expanded='false'
-                                aria-controls='value-2'> Cheapest rates</button>
+                                aria-controls='value-2'> Affordable Options </button>
                             </h2>
                             <div id='value-2' className='accordion-collapse collapse'
                             aria-labelledby='heading-2' data-bs-parent='#valuesAccordion'>
                                 <div className='accordion-body'>
                                     <p>
-                                    Our rental prices are guaranteed to be the lowest in the market. We value affordability without compromising on quality and service. <br /> This ensures you always have peace of mind when renting with us.
+                                    We prioritize affordability for all our users. With a wide range of options to fit different budgets, KejaPrime makes it easy to find a housewithout breaking the bank.
                                     </p>
                                 </div>
                             </div>
@@ -59,13 +60,13 @@ const Value = () => {
                             <h2 className='accordion-header' id='heading-3'>
                                 <button className='accordion-button collapsed' type='button' data-bs-toggle='collapse'
                                 data-bs-target='#value-3' aria-expanded='false'
-                                aria-controls='value-3'> Strategic Location</button>
+                                aria-controls='value-3'> Seamless Communication</button>
                             </h2>
                             <div id='value-3' className='accordion-collapse collapse'
                             aria-labelledby='heading-3' data-bs-parent='#valuesAccordion'>
                                 <div className='accordion-body'>
                                     <p>
-                                    All our properties are situated in prime locations, ensuring easy access to essential services and transportation. <br /> This ensures you always have peace of mind when renting with us.
+                                    Our platform facilitates direct and secure messaging between landlords and potential tenants, streamlining the rental process and eliminating middlemen.
                                     </p>
                                 </div>
                             </div>
@@ -74,13 +75,14 @@ const Value = () => {
                             <h2 className='accordion-header' id='heading-4'>
                                 <button className='accordion-button collapsed' type='button' data-bs-toggle='collapse'
                                 data-bs-target='#value-4' aria-expanded='false'
-                                aria-controls='value-4'> Lower Tax Rates</button>
+                                aria-controls='value-4'> Trusted Support </button>
                             </h2>
                             <div id='value-4' className='accordion-collapse collapse'
                             aria-labelledby='heading-4' data-bs-parent='#valuesAccordion'>
                                 <div className='accordion-body'>
                                     <p>
-                                    All our properties are situated in prime locations, ensuring easy access to essential services and transportation. <br /> This ensures you always have peace of mind when renting with us.
+                                    We’re here to support you throughout your rental journey. From search to signing, KejaPrime provides resources, customer support, and tools that make renting stress-free.
+        
                                     </p>
                                 </div>
                             </div>

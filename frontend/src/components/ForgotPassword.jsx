@@ -12,8 +12,12 @@ const ForgotPassword = () => {
         setError('');
 
         try {
-            const response = await axios.post ('http://localhost:8000/users/auth/password-reset', { email });
-            setMessage(response.data.detail || 'Check your email for the reset link.');
+            const response = await axios.get('https://kejaprime-v2.onrender.com/users/auth/password-reset', 
+                {
+                    params:{email:email}
+                }
+            );
+        setMessage(response.data.detail || 'Check your email for the reset link.');
         } catch (err) {
             setError(err.response?.data?.detail || 'Failed to send reset email.');
         }
