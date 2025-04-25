@@ -17,6 +17,7 @@ const ListingDetail = () => {
     const navigate = useNavigate();
     const { token } = useContext(AuthContext);
     const [listing, setListing] = useState(null);
+    const [agent, setAgent] = useState(null);
     const [activeIndex, setActiveIndex] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -25,10 +26,21 @@ const ListingDetail = () => {
     useEffect(() => {
         const fetchListing = async () => {
             try {
-                console.log(`Fetching listing with ID: ${id}`);
                 const response = await axios.get(`https://kejaprime-v2.onrender.com/properties/${id}`);
                 console.log('Full response:', response);
                 setListing(response.data);
+
+                if (response.data && response.data.agent) {
+                    try {
+                        const agentResponse = await axios.get(`https://kejaprime-v2.onrender.com/users/${response.data.agent}`);
+                        console.log('Agent response:', agentResponse);
+                        setAgent(agentResponse.data);
+                    }
+                    catch (agentError) {
+                        console.error('Error fetching agent details:', agentError);
+                    }
+                }
+
             } catch (error) {
                 console.error('Axios error:', error);
                 console.error('Network error details:', error.toJSON());
@@ -50,7 +62,7 @@ const ListingDetail = () => {
             <Navbar />
             <div className="m-2 d-flex justify-content-between" style={{ alignItems: "center" }}>
                 <div>
-                    <h3>{listing.title}</h3>
+                    <h4>{listing.name}</h4>
                     <p>
                         <img
                             src={location_icon}
@@ -61,6 +73,7 @@ const ListingDetail = () => {
                         {listing.location}
                     </p>
                 </div>
+                
                 <div>
                     <button
                         className="btn btn-secondary mb-3"
@@ -118,7 +131,7 @@ const ListingDetail = () => {
                         >
                             {listing.image_urls?.map((image, index) => (
                                 <SwiperSlide key={index}>
-                                    <div className="back" style={{ width: "100%", height: "150px", border: "1px solid red" }}>
+                                    <div className="back" style={{ width: "100%", height: "500px", borderRadius: "8px", overflow:"hidden" }}>
                                         <div className="card"
                                             style={{
                                                 width: "70%",
@@ -144,13 +157,33 @@ const ListingDetail = () => {
                 )}
             </div>
 
-            <div className="descriptions" style={{ marginTop: "20px" }}>
-                <div style={{ flex: "2", minWidth: "300px", padding: "10px" }}>
+            <div className="descriptions flex-wrap" style={{ display:"flex", margin: "20px"}}>
+                <div style={{width: "800px", padding: "10px" }}>
                     <h3 style={{ color: "#203856" }}>Description</h3>
                     <p style={{ background: "#f0f3f3", padding: "20px", borderRadius: "5px" }}>
                         {listing.description}
                     </p>
                 </div>
+                <div>
+                {agent && (
+                        <div className='d-flex'>
+                            <img src={agent.profile_pic} alt="agent_profile" style={{width:"80px", height:"80px", borderRadius:"10%", marginRight:"10px"}}/>
+                            <div>
+                                <p style={{color: "#020612", fontWeight:"700"}}>
+                                    Agent
+                                </p>
+                                <h4 style={{color: "#203957"}}>{agent.username || 'Unknown Agent'}</h4>
+                                <p>Contact: {agent.contact}</p>
+                                <p>Email: {agent.email}</p>
+                            </div>
+                            
+                        </div>
+
+
+                        
+                )}
+                </div>
+    
             </div>
             {/* Comments Section */}
             <div className="container mt-4">

@@ -50,3 +50,7 @@
 	text-overflow: ellipsis;
 	display: block;
 }
+.detailButton:hover{
+	background: #ffb36c;
+
+}
